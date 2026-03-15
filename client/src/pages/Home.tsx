@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Zap, Shield, BarChart3, Eye, Loader2, ArrowRight, CheckCircle, ExternalLink, Mail } from 'lucide-react';
+import { useState, Suspense, lazy } from 'react';
+import { Zap, Shield, BarChart3, Eye, Loader2, ArrowRight, CheckCircle, ExternalLink } from 'lucide-react';
 import { Link } from 'wouter';
 
-const LOGO_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663404809022/CziTcEtnqUteT2h42DU7Lt/aot-hero-logo_d6a1cc78.jpg';
+const GlobeScene = lazy(() => import('@/components/GlobeScene'));
+
+const LOGO_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663404809022/CziTcEtnqUteT2h42DU7Lt/Screenshot_20260314_181909_Gallery_967bb47c.jpg';
 
 interface AeoScores {
   contentQuality: number;
@@ -15,368 +14,284 @@ interface AeoScores {
   overall: number;
 }
 
+interface AeoResult {
+  scores: AeoScores;
+  recommendations: string[];
+  statusLabel: string;
+  analysis: { title: string; url: string };
+}
+
+function getScoreColor(score: number): string {
+  if (score >= 70) return '#00ffff';
+  if (score >= 40) return '#ff9500';
+  return '#ff007f';
+}
+
+function getOverallColor(score: number): string {
+  if (score >= 7) return '#00ffff';
+  if (score >= 4) return '#ff9500';
+  return '#ff007f';
+}
+
 export default function Home() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [scores, setScores] = useState<AeoScores | null>(null);
-  const [recommendations, setRecommendations] = useState<string[]>([]);
-  const [statusLabel, setStatusLabel] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
-  const [emailSent, setEmailSent] = useState(false);
+  const [result, setResult] = useState<AeoResult | null>(null);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const schemas = [
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Free AEO Score Checker - Ahead of Trends",
-        "url": "https://aheadoftrends.io",
-        "applicationCategory": "BusinessApplication",
-        "operatingSystem": "Web",
-        "description": "The internet's only free, instant, one-click AEO (AI Engine Optimization) diagnostic tool. Get your website's AI visibility score in seconds — no signup required.",
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "creator": { "@type": "Organization", "name": "Ahead of Trends", "url": "https://aheadoftrends.io" }
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is AEO (AI Engine Optimization)?",
-            "acceptedAnswer": { "@type": "Answer", "text": "AEO is the practice of optimizing your website so AI chat engines like ChatGPT, Perplexity, Claude, and Gemini can find, understand, and recommend your business. It goes beyond traditional SEO by focusing on structured data, answer-ready content, and AI-crawlable markup." }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I check my website's AEO score for free?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Visit aheadoftrends.io and enter your website URL. Our free tool instantly analyzes your site across 4 factors: Content Quality, Technical SEO, Authority, and Chat Visibility. No signup or payment required." }
-          },
-          {
-            "@type": "Question",
-            "name": "Why is AEO important for businesses in 2025?",
-            "acceptedAnswer": { "@type": "Answer", "text": "AI chat engines are replacing traditional search for millions of users. If your business isn't optimized for AI recommendations, you're invisible to a growing segment of potential customers who ask ChatGPT, Perplexity, or Claude for business recommendations instead of using Google." }
-          }
-        ]
-      }
-    ];
-    const existingScripts = document.querySelectorAll('script[data-aeo-schema]');
-    existingScripts.forEach(s => s.remove());
-    schemas.forEach((schema, i) => {
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.setAttribute('data-aeo-schema', `schema-${i}`);
-      script.textContent = JSON.stringify(schema);
-      document.head.appendChild(script);
-    });
-    return () => { document.querySelectorAll('script[data-aeo-schema]').forEach(s => s.remove()); };
-  }, []);
-
-  const handleAnalyze = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const analyze = async () => {
+    if (!url.trim()) return;
     setLoading(true);
-    setError(null);
-    setScores(null);
-    let normalizedUrl = url.trim();
-    if (!normalizedUrl.startsWith('http')) normalizedUrl = 'https://' + normalizedUrl;
-
+    setError('');
+    setResult(null);
     try {
-      const response = await fetch('/api/aeo', {
+      let target = url.trim();
+      if (!target.startsWith('http')) target = 'https://' + target;
+      const res = await fetch('/api/aeo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: normalizedUrl }),
+        body: JSON.stringify({ url: target }),
       });
-      if (response.ok) {
-        const data = await response.json();
-        if (data?.scores) {
-          setScores(data.scores);
-          setRecommendations(data.recommendations || []);
-          setStatusLabel(data.statusLabel || '');
-        } else {
-          setError('Could not parse response.');
-        }
-      } else {
-        const errData = await response.json().catch(() => null);
-        setError(errData?.error || 'Failed to analyze. The site may block crawlers.');
-      }
-    } catch {
-      setError('Network error. Please check the URL and try again.');
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setResult(data);
+    } catch (e: unknown) {
+      setError((e as Error).message || 'Analysis failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const getScoreColor = (val: number) => val >= 70 ? 'text-emerald-400' : val >= 40 ? 'text-amber-400' : 'text-red-400';
-  const getBarColor = (val: number) => val >= 70 ? 'from-emerald-500 to-cyan-500' : val >= 40 ? 'from-amber-500 to-yellow-500' : 'from-red-500 to-pink-500';
-
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* HERO: Logo + AEO Tool — Above the Fold, Zero Signup   */}
-      {/* ═══════════════════════════════════════════════════════ */}
-      <section className="relative py-12 md:py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent" />
-        <div className="container relative z-10">
-          {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <img
-              src={LOGO_URL}
-              alt="Ahead of Trends AI - Free AEO Score Checker"
-              className="w-full max-w-2xl h-auto object-contain"
-              style={{ imageRendering: 'auto' }}
-            />
-          </div>
-
-          {/* Headline */}
-          <div className="text-center max-w-3xl mx-auto mb-8">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-              Free <span className="text-cyan-400">AEO Score</span> Checker
-            </h1>
-            <p className="text-lg md:text-xl text-slate-300 mb-2">
-              The internet's only <strong>instant, one-click</strong> AI Engine Optimization diagnostic.
-            </p>
-            <p className="text-slate-400">
-              No signup. No payment. Enter your URL and get your score in seconds.
-            </p>
-          </div>
-
-          {/* AEO Input Tool */}
-          <div className="max-w-2xl mx-auto">
-            <Card className="bg-slate-900/80 border-cyan-500/30 p-6 md:p-8 shadow-lg shadow-cyan-500/5">
-              <form onSubmit={handleAnalyze} className="flex flex-col sm:flex-row gap-3">
-                <Input
-                  type="text"
-                  placeholder="Enter any website URL (e.g. yourcompany.com)"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="bg-slate-800 border-slate-700 text-slate-50 placeholder-slate-500 h-12 text-lg flex-1"
-                  required
-                />
-                <Button type="submit" className="btn-neon h-12 px-8 text-base whitespace-nowrap" disabled={!url || loading}>
-                  {loading ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Scanning...</> : <><Zap className="w-5 h-5 mr-2" /> Get Free Score</>}
-                </Button>
-              </form>
-
-              {error && (
-                <p className="text-red-400 text-sm mt-3 bg-red-500/10 border border-red-500/30 rounded p-3">{error}</p>
-              )}
-
-              {/* Trust indicators */}
-              <div className="mt-4 grid grid-cols-4 gap-2 text-center text-xs text-slate-500">
-                <div><Shield className="w-4 h-4 mx-auto mb-1 text-cyan-500" />100% Free</div>
-                <div><Zap className="w-4 h-4 mx-auto mb-1 text-cyan-500" />Instant Results</div>
-                <div><BarChart3 className="w-4 h-4 mx-auto mb-1 text-cyan-500" />4-Factor Score</div>
-                <div><Eye className="w-4 h-4 mx-auto mb-1 text-cyan-500" />No Signup</div>
-              </div>
-            </Card>
-          </div>
+    <div style={{ background: '#050a0f', minHeight: '100vh', color: '#e0f7ff', fontFamily: "'Inter', sans-serif" }}>
+      {/* NAV */}
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(5,10,15,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,255,255,0.1)', padding: '0 2rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <img src={LOGO_URL} alt="Ahead of Trends AI" style={{ height: '38px', objectFit: 'contain' }} />
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          {['Blog', 'Guides', 'About'].map(item => (
+            <Link key={item} href={`/${item.toLowerCase()}`} style={{ color: 'rgba(224,247,255,0.7)', textDecoration: 'none', fontSize: '0.875rem', letterSpacing: '0.05em' }}>{item}</Link>
+          ))}
+          <Link href="/alpha-rating" style={{ background: 'rgba(0,255,255,0.1)', border: '1px solid #00ffff', color: '#00ffff', padding: '0.4rem 1rem', borderRadius: '4px', textDecoration: 'none', fontSize: '0.875rem', letterSpacing: '0.05em' }}>Get AEO Rating</Link>
         </div>
-      </section>
+      </nav>
 
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* RESULTS: Shown inline after scan                       */}
-      {/* ═══════════════════════════════════════════════════════ */}
-      {scores && (
-        <section className="py-12 border-t border-slate-800">
-          <div className="container max-w-4xl">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-2">Your AEO Score</h2>
-              <p className="text-slate-400">Results for <span className="text-cyan-400">{url}</span></p>
+      {/* HERO — 3D COCKPIT */}
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '80px', overflow: 'hidden' }}>
+        {/* Three.js Globe */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <Suspense fallback={null}>
+            <GlobeScene />
+          </Suspense>
+        </div>
+
+        {/* Cockpit HUD overlay */}
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(0,255,255,0.05) 0%, transparent 70%), radial-gradient(ellipse at center bottom, rgba(255,0,127,0.08) 0%, transparent 60%)', zIndex: 1, pointerEvents: 'none' }} />
+
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', maxWidth: '800px', padding: '0 1.5rem' }}>
+          {/* HUD badge */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(0,255,255,0.08)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '20px', padding: '0.3rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', letterSpacing: '0.15em', color: '#00ffff', textTransform: 'uppercase' }}>
+            <span style={{ width: '6px', height: '6px', background: '#00ffff', borderRadius: '50%', animation: 'pulse 2s infinite' }} />
+            AEO Diagnostic Engine — Online
+          </div>
+
+          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+            <span style={{ color: '#ffffff' }}>Free </span>
+            <span style={{ color: '#00ffff', textShadow: '0 0 30px rgba(0,255,255,0.5)' }}>AEO Score</span>
+            <span style={{ color: '#ffffff' }}> Checker</span>
+          </h1>
+
+          <p style={{ fontSize: '1.1rem', color: 'rgba(224,247,255,0.7)', marginBottom: '0.5rem', lineHeight: 1.6 }}>
+            The internet's only <strong style={{ color: '#ff007f' }}>instant, one-click</strong> AI Engine Optimization diagnostic.
+          </p>
+          <p style={{ fontSize: '0.9rem', color: 'rgba(224,247,255,0.5)', marginBottom: '2.5rem' }}>
+            No signup. No payment. Enter your URL and get your score in seconds.
+          </p>
+
+          {/* SEARCH INPUT — PRIMARY FOCUS */}
+          <div style={{ background: 'rgba(0,255,255,0.05)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '12px', padding: '1.5rem', maxWidth: '600px', margin: '0 auto 1.5rem', boxShadow: '0 0 40px rgba(0,255,255,0.1)' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <input
+                type="text"
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && analyze()}
+                placeholder="yourcompany.com"
+                style={{ flex: 1, minWidth: '200px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(0,255,255,0.2)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#e0f7ff', fontSize: '1rem', outline: 'none' }}
+              />
+              <button
+                onClick={analyze}
+                disabled={loading}
+                style={{ background: loading ? 'rgba(0,255,255,0.2)' : 'linear-gradient(135deg, #00ffff, #0088cc)', border: 'none', borderRadius: '8px', padding: '0.75rem 1.5rem', color: '#050a0f', fontWeight: 700, fontSize: '0.95rem', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}
+              >
+                {loading ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Zap size={16} />}
+                {loading ? 'Scanning...' : 'Analyze Now'}
+              </button>
             </div>
-
-            {/* Overall Score */}
-            <Card className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border-cyan-500/50 p-10 mb-8 text-center">
-              <p className="text-slate-400 mb-3 uppercase tracking-wider text-sm">AI Visibility Score</p>
-              <div className="text-7xl font-bold text-cyan-400 mb-3">{scores.overall}<span className="text-2xl text-slate-500">/10</span></div>
-              <p className="text-slate-300 text-lg">{statusLabel}</p>
-            </Card>
-
-            {/* 4-Factor Breakdown */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              {[
-                { label: 'Content Quality', value: scores.contentQuality, weight: '40%', icon: BarChart3 },
-                { label: 'Technical SEO', value: scores.technicalSeo, weight: '25%', icon: Shield },
-                { label: 'Authority', value: scores.authority, weight: '20%', icon: Zap },
-                { label: 'Chat Visibility', value: scores.chatVisibility, weight: '15%', icon: Eye },
-              ].map((f) => (
-                <Card key={f.label} className="bg-slate-900/50 border-slate-700 p-5">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <f.icon className="w-4 h-4 text-cyan-400" />
-                      <h3 className="font-bold text-sm">{f.label}</h3>
-                    </div>
-                    <span className={`font-bold text-sm ${getScoreColor(f.value)}`}>{f.value}/100</span>
-                  </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2.5">
-                    <div className={`bg-gradient-to-r ${getBarColor(f.value)} h-2.5 rounded-full transition-all duration-1000`} style={{ width: `${f.value}%` }} />
-                  </div>
-                </Card>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '1rem', fontSize: '0.75rem', color: 'rgba(224,247,255,0.5)' }}>
+              {['100% Free', 'Instant Results', '4-Factor Score', 'No Signup'].map(tag => (
+                <span key={tag} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <CheckCircle size={12} style={{ color: '#00ffff' }} /> {tag}
+                </span>
               ))}
             </div>
+          </div>
 
-            {/* Recommendations */}
-            {recommendations.length > 0 && (
-              <Card className="bg-slate-900/50 border-slate-700 p-6 mb-8">
-                <h3 className="font-bold text-lg mb-4 text-cyan-400">What to Fix</h3>
-                <ul className="space-y-2">
-                  {recommendations.map((rec, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
-                      <span className="text-cyan-400 mt-0.5 shrink-0">{i + 1}.</span>
-                      <span>{rec}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            )}
+          {/* ERROR */}
+          {error && (
+            <div style={{ background: 'rgba(255,0,127,0.1)', border: '1px solid rgba(255,0,127,0.3)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#ff007f', fontSize: '0.875rem', maxWidth: '600px', margin: '0 auto 1rem' }}>
+              {error}
+            </div>
+          )}
 
-            {/* Email report + Deep Audit CTAs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="bg-slate-900/50 border-cyan-500/30 p-6">
-                <h3 className="font-bold mb-2">Email This Report</h3>
-                <p className="text-slate-400 text-sm mb-3">Get your results sent to your inbox.</p>
-                {emailSent ? (
-                  <p className="text-cyan-400 flex items-center gap-2"><CheckCircle className="w-4 h-4" /> Sent!</p>
-                ) : (
-                  <form onSubmit={(e) => { e.preventDefault(); setEmailSent(true); }} className="flex gap-2">
-                    <Input type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-slate-800 border-slate-700 text-slate-50 placeholder-slate-500 flex-1" required />
-                    <Button type="submit" className="btn-neon"><Mail className="w-4 h-4" /></Button>
-                  </form>
-                )}
-              </Card>
-              <Card className="bg-gradient-to-br from-pink-500/10 to-purple-500/10 border-pink-500/30 p-6">
-                <h3 className="font-bold mb-2">Need Us to Fix It?</h3>
-                <p className="text-slate-400 text-sm mb-3">Our team will optimize your site for AI engines.</p>
-                <a href="https://ko-fi.com/aheadoftrendsautomatedaiagents" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold">
-                    <ExternalLink className="w-4 h-4 mr-2" /> Request Deep Audit
-                  </Button>
+          {/* RESULTS */}
+          {result && (
+            <div style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(0,255,255,0.2)', borderRadius: '12px', padding: '2rem', maxWidth: '700px', margin: '0 auto', textAlign: 'left', backdropFilter: 'blur(10px)' }}>
+              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.5)', marginBottom: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your AEO Score — {result.analysis.url}</p>
+                <div style={{ fontSize: '4rem', fontWeight: 900, color: getOverallColor(result.scores.overall), textShadow: `0 0 30px ${getOverallColor(result.scores.overall)}` }}>
+                  {result.scores.overall}<span style={{ fontSize: '1.5rem', color: 'rgba(224,247,255,0.5)' }}>/10</span>
+                </div>
+                <div style={{ display: 'inline-block', background: 'rgba(0,255,255,0.1)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '20px', padding: '0.3rem 1rem', fontSize: '0.8rem', color: '#00ffff', marginTop: '0.5rem' }}>
+                  {result.statusLabel}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+                {[
+                  { label: 'Content Quality', value: result.scores.contentQuality, icon: <BarChart3 size={14} /> },
+                  { label: 'Technical SEO', value: result.scores.technicalSeo, icon: <Shield size={14} /> },
+                  { label: 'Authority', value: result.scores.authority, icon: <Zap size={14} /> },
+                  { label: 'Chat Visibility', value: result.scores.chatVisibility, icon: <Eye size={14} /> },
+                ].map(({ label, value, icon }) => (
+                  <div key={label} style={{ background: 'rgba(0,255,255,0.03)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '8px', padding: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'rgba(224,247,255,0.7)' }}>{icon}{label}</span>
+                      <span style={{ fontSize: '1rem', fontWeight: 700, color: getScoreColor(value) }}>{value}</span>
+                    </div>
+                    <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}>
+                      <div style={{ height: '100%', width: `${value}%`, background: getScoreColor(value), borderRadius: '2px', boxShadow: `0 0 8px ${getScoreColor(value)}` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {result.recommendations.length > 0 && (
+                <div>
+                  <h3 style={{ fontSize: '0.9rem', color: '#ff007f', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>What to Fix</h3>
+                  <ol style={{ paddingLeft: '1.2rem', margin: 0 }}>
+                    {result.recommendations.map((rec, i) => (
+                      <li key={i} style={{ fontSize: '0.85rem', color: 'rgba(224,247,255,0.75)', marginBottom: '0.4rem', lineHeight: 1.5 }}>{rec}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(0,255,255,0.1)', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <a href="https://ko-fi.com/aheadoftrends" target="_blank" rel="noreferrer" style={{ flex: 1, background: 'linear-gradient(135deg, #ff007f, #cc0066)', border: 'none', borderRadius: '8px', padding: '0.75rem', color: '#fff', fontWeight: 700, fontSize: '0.875rem', textAlign: 'center', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  <ExternalLink size={14} /> Get Expert Fix
                 </a>
-              </Card>
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </section>
 
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* EDUCATIONAL CONTENT: What is AEO? (AdSense + LLM SEO) */}
-      {/* ═══════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 border-t border-slate-800">
-        <div className="container max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center">What is AEO (AI Engine Optimization)?</h2>
+      {/* RESOURCES — AdSense grounding */}
+      <section style={{ background: '#070d12', padding: '5rem 2rem', borderTop: '1px solid rgba(0,255,255,0.1)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#00ffff', marginBottom: '1rem', textAlign: 'center' }}>What is AEO (AI Engine Optimization)?</h2>
+          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+            <strong style={{ color: '#e0f7ff' }}>AI Engine Optimization (AEO)</strong> is the discipline of structuring your website's content, metadata, and semantic markup so that AI-powered conversational engines — including ChatGPT, Google Gemini, Perplexity AI, Claude, and Microsoft Copilot — can accurately discover, understand, and recommend your business to users. Unlike traditional Search Engine Optimization (SEO), which targets ranked lists of links, AEO targets the answer layer: the single, direct response an AI assistant delivers when a user asks a question.
+          </p>
+          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+            The shift from "search and browse" to "ask and receive" is accelerating. Over 40% of Gen Z users now prefer asking AI assistants over using Google Search for product and service discovery. Enterprise procurement teams increasingly rely on AI-generated vendor summaries. If your business is not optimized for the AI answer layer, you are invisible to a rapidly growing segment of your potential customers — often without realizing it.
+          </p>
 
-          <div className="prose prose-invert prose-lg max-w-none space-y-6 text-slate-300">
-            <p>
-              <strong>AI Engine Optimization (AEO)</strong> is the practice of structuring your website's content, metadata, and markup so that AI-powered chat engines — such as ChatGPT, Google Gemini, Perplexity, Claude, and Microsoft Copilot — can accurately find, understand, and recommend your business to users.
-            </p>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem', marginTop: '2rem' }}>The Four Pillars of AEO</h3>
 
-            <p>
-              Unlike traditional SEO, which focuses on ranking in a list of ten blue links, AEO targets the conversational answer layer. When a user asks an AI assistant "What's the best bakery near me?" or "Which SaaS tool handles invoicing?", the AI doesn't show a list — it gives one or two direct recommendations. If your business isn't optimized for that answer, you are invisible to a rapidly growing audience.
-            </p>
-
-            <h3 className="text-2xl font-bold text-cyan-400 mt-8">Why Does AEO Matter in 2025?</h3>
-            <p>
-              Over 40% of Gen Z users now prefer asking AI assistants over using Google Search. Enterprise buyers increasingly rely on AI summaries for vendor shortlisting. The shift from "search and browse" to "ask and receive" means that businesses without AEO optimization are losing market share every day — often without realizing it.
-            </p>
-
-            <h3 className="text-2xl font-bold text-cyan-400 mt-8">How Does Our Free AEO Score Work?</h3>
-            <p>
-              Our diagnostic tool crawls your website in real-time and evaluates it across four weighted factors that determine how likely AI engines are to cite your business:
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-              <Card className="bg-slate-900/50 border-slate-700 p-5">
-                <h4 className="font-bold text-cyan-400 mb-2">Content Quality (40%)</h4>
-                <p className="text-sm text-slate-400">Word count, heading hierarchy, image alt text coverage, and internal linking structure. AI engines prefer well-structured, comprehensive content.</p>
-              </Card>
-              <Card className="bg-slate-900/50 border-slate-700 p-5">
-                <h4 className="font-bold text-cyan-400 mb-2">Technical SEO (25%)</h4>
-                <p className="text-sm text-slate-400">Meta titles, descriptions, HTTPS, canonical tags, viewport configuration, and indexability. The foundation that allows AI crawlers to access your content.</p>
-              </Card>
-              <Card className="bg-slate-900/50 border-slate-700 p-5">
-                <h4 className="font-bold text-cyan-400 mb-2">Authority (20%)</h4>
-                <p className="text-sm text-slate-400">JSON-LD structured data, schema type richness, and outbound citations. AI engines use entity recognition to determine if your business is a credible source.</p>
-              </Card>
-              <Card className="bg-slate-900/50 border-slate-700 p-5">
-                <h4 className="font-bold text-cyan-400 mb-2">Chat Visibility (15%)</h4>
-                <p className="text-sm text-slate-400">FAQ schema, HowTo markup, concise answer paragraphs (40-60 words), and question-based headings. These are the exact formats AI engines extract for direct answers.</p>
-              </Card>
-            </div>
-
-            <h3 className="text-2xl font-bold text-cyan-400 mt-8">What is a Good AEO Score?</h3>
-            <p>
-              Scores range from 0 to 10. A score below 3 means AI engines are likely ignoring your business entirely. Scores between 3-5 indicate low visibility with significant room for improvement. Scores of 5-7 show moderate presence — you're being considered but not consistently recommended. Scores above 7 indicate strong AI visibility, and above 8.5 represents what we call "Agentic Dominance" — your business is the go-to recommendation.
-            </p>
-
-            <h3 className="text-2xl font-bold text-cyan-400 mt-8">How to Improve Your AEO Score</h3>
-            <p>
-              After running your free diagnostic, follow the specific recommendations provided. Common improvements include adding JSON-LD schema markup (Organization, FAQ, HowTo), writing concise answer paragraphs that AI can extract directly, structuring content with question-based headings, and ensuring all technical SEO fundamentals are in place.
-            </p>
-            <p>
-              For businesses that need professional help, our team offers comprehensive AEO audits and implementation services. But the free tool gives you everything you need to start improving today.
-            </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            {[
+              { icon: <BarChart3 size={20} />, title: 'Content Quality (40%)', desc: 'Word count, heading hierarchy (H1→H2→H3), image alt text coverage, and internal linking density. AI engines prefer comprehensive, well-structured content with clear topical authority.' },
+              { icon: <Shield size={20} />, title: 'Technical SEO (25%)', desc: 'Meta titles (30-60 chars), meta descriptions (120-160 chars), HTTPS, canonical tags, viewport configuration, and crawl accessibility. The technical foundation that allows AI crawlers to access and index your content.' },
+              { icon: <Zap size={20} />, title: 'Authority (20%)', desc: 'JSON-LD structured data (Organization, Article, Product, LocalBusiness), schema type richness, and outbound citations to authoritative sources. AI engines use entity recognition to determine if your business is a credible, citable source.' },
+              { icon: <Eye size={20} />, title: 'Chat Visibility (15%)', desc: 'FAQPage schema, HowTo markup, concise answer paragraphs (40-60 words), and question-based headings (What/How/Why). These are the exact content formats that AI engines extract for direct conversational answers.' },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} style={{ background: 'rgba(0,255,255,0.03)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '8px', padding: '1.25rem' }}>
+                <div style={{ color: '#00ffff', marginBottom: '0.5rem' }}>{icon}</div>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#e0f7ff', marginBottom: '0.5rem' }}>{title}</h4>
+                <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.6)', lineHeight: 1.6 }}>{desc}</p>
+              </div>
+            ))}
           </div>
 
-          {/* CTA back to tool */}
-          <div className="text-center mt-12">
-            <Button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="btn-neon text-lg px-8 py-3">
-              <ArrowRight className="w-5 h-5 mr-2" /> Check Your Score Now — It's Free
-            </Button>
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem' }}>What is a Good AEO Score?</h3>
+          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+            Our diagnostic scores websites on a 0-10 scale. A score below 3 indicates that AI engines are likely ignoring your business entirely — your content is either inaccessible, too thin, or structurally incompatible with AI extraction. Scores between 3-5 represent Low Visibility: you have a basic web presence but significant structural gaps prevent consistent AI recommendation. Scores of 5-7 indicate Moderate Presence — your business is being considered by AI engines but not consistently recommended. Scores above 7 indicate Strong Visibility, and a score above 8.5 represents what we call Agentic Dominance: your business is the go-to recommendation when users ask AI assistants about your category.
+          </p>
+
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem' }}>How to Improve Your AEO Score</h3>
+          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
+            The most impactful single improvement for most websites is implementing JSON-LD structured data. Adding an Organization schema with your business name, description, URL, logo, and contact information gives AI engines a machine-readable identity card for your business. The second highest-impact change is adding FAQPage schema to your key service pages — this directly feeds the question-and-answer format that AI assistants use for conversational responses. Third, restructure your content to include concise answer paragraphs of 40-60 words that directly answer common questions about your business, product, or service. AI engines extract these self-contained blocks for direct answers.
+          </p>
+
+          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem' }}>Why AEO Matters More Than SEO in 2025</h3>
+          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '2rem' }}>
+            Traditional SEO optimizes for a list of ten blue links. A user clicks one, browses, and may or may not convert. AEO optimizes for a single, authoritative recommendation delivered directly in a conversational interface. When a user asks "What's the best project management tool for remote teams?" and an AI assistant recommends your product by name, that is a zero-click conversion event — the user already trusts the recommendation before visiting your site. The businesses that dominate AI recommendations in 2025 will own their category for the next decade. The window to establish that dominance is open now, and it closes as AI-optimized competitors enter every market.
+          </p>
+
+          {/* CTA repeat */}
+          <div style={{ textAlign: 'center', padding: '2rem', background: 'rgba(0,255,255,0.05)', border: '1px solid rgba(0,255,255,0.2)', borderRadius: '12px' }}>
+            <h3 style={{ color: '#00ffff', marginBottom: '0.5rem' }}>Check Your Score Now — It's Free</h3>
+            <p style={{ color: 'rgba(224,247,255,0.6)', fontSize: '0.875rem', marginBottom: '1rem' }}>No signup. No payment. Instant results.</p>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ background: 'linear-gradient(135deg, #00ffff, #0088cc)', border: 'none', borderRadius: '8px', padding: '0.75rem 2rem', color: '#050a0f', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+              <ArrowRight size={16} /> Analyze My Website
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* SERVICE TIERS: Reduced presence, below educational     */}
-      {/* ═══════════════════════════════════════════════════════ */}
-      <section className="py-12 border-t border-slate-800 bg-slate-900/30">
-        <div className="container max-w-4xl">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2">Need Expert Help?</h2>
-            <p className="text-slate-400">Our team can fix your AEO score for you.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="bg-slate-900/50 border-slate-700 p-6">
-              <h3 className="text-xl font-bold mb-1">Agentic Growth</h3>
-              <div className="text-2xl font-bold text-cyan-400 mb-3">$1,500<span className="text-sm text-slate-400">/mo</span></div>
-              <ul className="text-sm text-slate-400 space-y-1 mb-4">
-                <li>Real-time AI trend monitoring</li>
-                <li>Monthly AEO content strategy</li>
-                <li>Schema markup implementation</li>
-              </ul>
-              <a href="https://ko-fi.com/aheadoftrendsautomatedaiagents" target="_blank" rel="noopener noreferrer">
-                <Button className="w-full btn-neon">Get Started</Button>
-              </a>
-            </Card>
-            <Card className="bg-slate-900/50 border-slate-700 p-6">
-              <h3 className="text-xl font-bold mb-1">Full-Stack AEO</h3>
-              <div className="text-2xl font-bold text-cyan-400 mb-3">$3,500<span className="text-sm text-slate-400">/mo</span></div>
-              <ul className="text-sm text-slate-400 space-y-1 mb-4">
-                <li>Everything in Agentic Growth</li>
-                <li>Full website AEO overhaul</li>
-                <li>Competitor displacement strategy</li>
-              </ul>
-              <a href="https://ko-fi.com/aheadoftrendsautomatedaiagents" target="_blank" rel="noopener noreferrer">
-                <Button className="w-full btn-neon">Get Started</Button>
-              </a>
-            </Card>
+      {/* SERVICES — reduced presence */}
+      <section style={{ background: '#050a0f', padding: '4rem 2rem', borderTop: '1px solid rgba(255,0,127,0.1)' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'rgba(224,247,255,0.6)', marginBottom: '0.5rem' }}>Need Expert Help?</h2>
+          <p style={{ color: 'rgba(224,247,255,0.4)', fontSize: '0.875rem', marginBottom: '2rem' }}>Our team can implement your AEO improvements for you.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+            {[
+              { name: 'Agentic Growth', price: '$1,500/mo', features: ['Real-time AI trend monitoring', 'Monthly AEO content strategy', 'Schema markup implementation'] },
+              { name: 'Full-Stack AEO', price: '$3,500/mo', features: ['Everything in Agentic Growth', 'Full website AEO overhaul', 'Competitor displacement strategy'] },
+            ].map(tier => (
+              <div key={tier.name} style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '8px', padding: '1.5rem', textAlign: 'left' }}>
+                <h3 style={{ color: '#00ffff', marginBottom: '0.25rem', fontSize: '1rem' }}>{tier.name}</h3>
+                <p style={{ color: '#ff007f', fontWeight: 700, marginBottom: '1rem', fontSize: '1.25rem' }}>{tier.price}</p>
+                <ul style={{ paddingLeft: '1.2rem', margin: '0 0 1rem' }}>
+                  {tier.features.map(f => <li key={f} style={{ color: 'rgba(224,247,255,0.6)', fontSize: '0.8rem', marginBottom: '0.3rem' }}>{f}</li>)}
+                </ul>
+                <a href="https://ko-fi.com/aheadoftrends" target="_blank" rel="noreferrer" style={{ display: 'block', textAlign: 'center', background: 'rgba(0,255,255,0.1)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '6px', padding: '0.5rem', color: '#00ffff', textDecoration: 'none', fontSize: '0.875rem' }}>Get Started</a>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 border-t border-slate-800 text-center text-slate-500 text-sm">
-        <div className="container">
-          <p>&copy; {new Date().getFullYear()} Ahead of Trends. The internet's only free, instant AEO diagnostic tool.</p>
-          <div className="flex justify-center gap-4 mt-3">
-            <Link href="/blog"><span className="hover:text-cyan-400 cursor-pointer">Blog</span></Link>
-            <Link href="/guides"><span className="hover:text-cyan-400 cursor-pointer">Guides</span></Link>
-            <Link href="/about"><span className="hover:text-cyan-400 cursor-pointer">About</span></Link>
-            <Link href="/privacy"><span className="hover:text-cyan-400 cursor-pointer">Privacy</span></Link>
-            <Link href="/terms"><span className="hover:text-cyan-400 cursor-pointer">Terms</span></Link>
-          </div>
+      {/* FOOTER */}
+      <footer style={{ background: '#030608', borderTop: '1px solid rgba(0,255,255,0.08)', padding: '2rem', textAlign: 'center' }}>
+        <img src={LOGO_URL} alt="Ahead of Trends AI" style={{ height: '32px', objectFit: 'contain', marginBottom: '1rem', opacity: 0.7 }} />
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
+          {['Blog', 'Guides', 'About', 'Privacy', 'Terms'].map(item => (
+            <Link key={item} href={`/${item.toLowerCase()}`} style={{ color: 'rgba(224,247,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>{item}</Link>
+          ))}
         </div>
+        <p style={{ color: 'rgba(224,247,255,0.3)', fontSize: '0.75rem' }}>© 2025 Ahead of Trends AI. The internet's only free, instant AEO diagnostic.</p>
       </footer>
+
+      <style>{`
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        input::placeholder { color: rgba(224,247,255,0.3); }
+        input:focus { border-color: rgba(0,255,255,0.5) !important; box-shadow: 0 0 0 2px rgba(0,255,255,0.1); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+      `}</style>
     </div>
   );
 }

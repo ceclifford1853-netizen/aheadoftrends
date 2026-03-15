@@ -4,6 +4,7 @@ import cors from "cors";
 import { appRouter } from "./routers";
 import path from "path";
 import { fileURLToPath } from "url";
+import { analyzeWebsite, calculateAeoScore, generateRecommendations, getStatusLabel } from "./services/aeoScoring";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +27,32 @@ app.use(
     }),
   })
 );
+
+// REST AEO Diagnostic Endpoint (used by Home.tsx)
+app.post("/api/aeo", async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ error: "URL is required" });
+    const analysis = await analyzeWebsite(url);
+    const scores = calculateAeoScore(analysis);
+    const recommendations = generateRecommendations(analysis, scores);
+    res.json({
+      scores: {
+        contentQuality: scores.contentQuality,
+        technicalSeo: scores.technicalSeo,
+        authority: scores.authority,
+        chatVisibility: scores.chatVisibility,
+        overall: scores.overall,
+      },
+      recommendations,
+      statusLabel: getStatusLabel(scores.overall),
+      analysis: { title: analysis.title, url: analysis.url },
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Analysis failed";
+    res.status(500).json({ error: msg });
+  }
+});
 
 // Ko-fi Webhook Endpoint
 app.post("/api/webhooks/kofi", express.urlencoded({ extended: true }), (req, res) => {

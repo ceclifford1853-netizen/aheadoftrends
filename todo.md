@@ -44,10 +44,11 @@
 - [x] Deployed to Vercel at aheadoftrends.vercel.app
 
 ## Phase 4: Tool-First Pivot
-- [ ] Upload logo to CDN
-- [ ] Rewrite Home.tsx as tool-first (AEO input above fold)
-- [ ] Add rich AEO educational resources section (AdSense ready)
-- [ ] Push service tiers below the fold
-- [ ] Zero-signup policy enforced
+- [x] Upload logo to CDN
+- [x] Rewrite Home.tsx as tool-first (AEO input above fold) with Three.js Jet Cockpit globe
+- [x] Add rich AEO educational resources section (AdSense ready, 800+ words)
+- [x] Push service tiers below the fold
+- [x] Zero-signup policy enforced
+- [x] REST /api/aeo endpoint added to server/index.ts
 - [ ] Test 10 websites on live site
 - [ ] PDF report for Gemini and Charles
