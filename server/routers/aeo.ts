@@ -138,3 +138,11 @@ export const aeoRouter = router({
       return analyses;
     }),
 });
+
+  getLeads: publicProcedure.query(async ({ ctx }) => {
+    const leads = await ctx.db.query.aeoAnalyses.findMany({
+      orderBy: (t) => [desc(t.createdAt)],
+      limit: 100,
+    });
+    return leads;
+  }),

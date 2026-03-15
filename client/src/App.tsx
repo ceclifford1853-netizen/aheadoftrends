@@ -17,6 +17,7 @@ import AboutUs from "./pages/AboutUs";
 import Audits from "./pages/Audits";
 import Guides from "./pages/Guides";
 import GuidePage from "./pages/GuidePage";
+import Admin from "./pages/Admin";
 
 function Router() {
   return (
@@ -39,6 +40,9 @@ function Router() {
       </Route>
       <Route path={"/audits"}>
         <BetaGuard><Audits /></BetaGuard>
+      </Route>
+      <Route path={"/admin"}>
+        <Admin />
       </Route>
 
       {/* Final fallback */}
