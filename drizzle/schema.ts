@@ -25,4 +25,40 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Leads table for capturing email submissions from the Alpha Rating form.
+ * Stores user-submitted website URLs and email addresses.
+ */
+export const leads = mysqlTable("leads", {
+  id: int("id").autoincrement().primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  websiteUrl: varchar("websiteUrl", { length: 2048 }).notNull(),
+  industry: varchar("industry", { length: 256 }),
+  companyName: varchar("companyName", { length: 256 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = typeof leads.$inferInsert;
+
+/**
+ * AEO Scores table for storing the 4-factor weighted scoring results.
+ * Tracks Quality (40%), SEO (25%), Authority (20%), Visibility (15%).
+ */
+export const aeoScores = mysqlTable("aeoScores", {
+  id: int("id").autoincrement().primaryKey(),
+  leadId: int("leadId").notNull(),
+  websiteUrl: varchar("websiteUrl", { length: 2048 }).notNull(),
+  qualityScore: int("qualityScore").notNull(), // 0-10
+  seoScore: int("seoScore").notNull(), // 0-10
+  authorityScore: int("authorityScore").notNull(), // 0-10
+  visibilityScore: int("visibilityScore").notNull(), // 0-10
+  overallScore: int("overallScore").notNull(), // 0-10 weighted
+  recommendations: text("recommendations"), // JSON string of recommendations
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AeoScore = typeof aeoScores.$inferSelect;
+export type InsertAeoScore = typeof aeoScores.$inferInsert;
