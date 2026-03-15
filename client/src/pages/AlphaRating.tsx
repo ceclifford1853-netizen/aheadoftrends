@@ -41,17 +41,17 @@ export default function AlphaRating() {
       }
 
       // Call the AEO scoring engine
-      const response = await fetch('/api/trpc/aeo.analyze', {
+      const response = await fetch('/api/aeo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ json: { url: normalizedUrl } }),
+        body: JSON.stringify({ url: normalizedUrl }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        if (data?.result?.data) {
-          setScore(data.result.data);
-          setRecommendations(data.result.data.recommendations || []);
+        if (data?.scores) {
+          setScore(data.scores);
+          setRecommendations(data.recommendations || []);
           setAnalysisError(null);
         } else {
           setAnalysisError('Could not parse response. Please try again.');
@@ -59,7 +59,7 @@ export default function AlphaRating() {
         }
       } else {
         const errData = await response.json().catch(() => null);
-        setAnalysisError(errData?.error?.message || 'Failed to analyze. The site may block crawlers.');
+        setAnalysisError(errData?.error || 'Failed to analyze. The site may block crawlers.');
         return;
       }
       setStep(2);
