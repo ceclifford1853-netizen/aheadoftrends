@@ -137,12 +137,12 @@ export const aeoRouter = router({
 
       return analyses;
     }),
-});
 
-  getLeads: publicProcedure.query(async ({ ctx }) => {
-    const leads = await ctx.db.query.aeoAnalyses.findMany({
-      orderBy: (t) => [desc(t.createdAt)],
+  getLeads: publicProcedure.query(async () => {
+    const leads = await db.query.aeoAnalyses.findMany({
+      orderBy: (aeoAnalyses, { desc }) => desc(aeoAnalyses.createdAt),
       limit: 100,
     });
     return leads;
   }),
+});

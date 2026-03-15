@@ -15,6 +15,6 @@ export async function fetchWithScraperAPI(url: string) {
     });
     return response.data;
   } catch (error) {
-    throw new Error(`ScraperAPI failed: ${error.message}`);
+    throw new Error(`ScraperAPI failed: ${(error as Error).message}`);
   }
 }
