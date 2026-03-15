@@ -27,3 +27,18 @@
 - [ ] Deploy to Vercel
 - [ ] Verify live deployment at aheadoftrends.io
 - [ ] Owner email notifications on lead submission
+
+## AEO Backend Completion (Video Standard)
+- [x] Real AEO backend - axios+cheerio web crawler (no mock data)
+- [x] Deterministic scoring engine - zero AI hallucinations
+- [x] JSON-LD schema detection and parsing
+- [x] FAQ/HowTo schema detection for AI visibility scoring
+- [x] Concise answer paragraph detection (40-60 words)
+- [x] Question-based heading detection (What/How/Why)
+- [x] Image alt text coverage analysis
+- [x] Specific, factual recommendations per finding
+- [x] Error handling for blocked/unreachable sites
+- [x] Removed random fallback scores - only real crawl data shown
+- [x] Recommendations section displayed in AlphaRating UI
+- [x] Vite proxy to Express server for dev mode API access
+- [x] Deployed to Vercel at aheadoftrends.vercel.app

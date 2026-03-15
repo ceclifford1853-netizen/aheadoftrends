@@ -13,6 +13,8 @@ interface AeoScoreBreakdown {
   authority: number;
   chatVisibility: number;
   overall: number;
+  recommendations?: string[];
+  status?: string;
 }
 
 export default function AlphaRating() {
@@ -22,6 +24,8 @@ export default function AlphaRating() {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [score, setScore] = useState<AeoScoreBreakdown | null>(null);
+  const [recommendations, setRecommendations] = useState<string[]>([]);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
 
 
@@ -47,29 +51,27 @@ export default function AlphaRating() {
         const data = await response.json();
         if (data?.result?.data) {
           setScore(data.result.data);
+          setRecommendations(data.result.data.recommendations || []);
+          setAnalysisError(null);
         } else {
-          generateFallbackScore();
+          setAnalysisError('Could not parse response. Please try again.');
+          return;
         }
       } else {
-        generateFallbackScore();
+        const errData = await response.json().catch(() => null);
+        setAnalysisError(errData?.error?.message || 'Failed to analyze. The site may block crawlers.');
+        return;
       }
       setStep(2);
-    } catch {
-      generateFallbackScore();
-      setStep(2);
+    } catch (err: any) {
+      setAnalysisError('Network error. Please check the URL and try again.');
+      return;
     } finally {
       setLoading(false);
     }
   };
 
-  const generateFallbackScore = () => {
-    const cq = Math.floor(Math.random() * 35) + 30;
-    const ts = Math.floor(Math.random() * 35) + 30;
-    const au = Math.floor(Math.random() * 35) + 25;
-    const cv = Math.floor(Math.random() * 35) + 20;
-    const overall = Math.round(((cq * 0.4 + ts * 0.25 + au * 0.2 + cv * 0.15) / 100) * 10);
-    setScore({ contentQuality: cq, technicalSeo: ts, authority: au, chatVisibility: cv, overall });
-  };
+  // No fallback — we only show real data, never fabricated scores
 
   const handleSubmitLead = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,6 +133,9 @@ export default function AlphaRating() {
                     required
                   />
                   <p className="text-slate-500 text-sm mt-2">Example: caymanmarlroad.com</p>
+                  {analysisError && (
+                    <p className="text-red-400 text-sm mt-2 bg-red-500/10 border border-red-500/30 rounded p-3">{analysisError}</p>
+                  )}
                 </div>
 
                 <Button type="submit" className="btn-neon w-full h-12 text-lg" disabled={!url || loading}>
@@ -203,6 +208,21 @@ export default function AlphaRating() {
                 </Card>
               ))}
             </div>
+
+            {/* Recommendations */}
+            {recommendations.length > 0 && (
+              <Card className="bg-slate-900/50 border-slate-700 p-8 mb-8">
+                <h3 className="font-bold text-lg mb-4 text-cyan-400">Specific Findings & Recommendations</h3>
+                <ul className="space-y-3">
+                  {recommendations.map((rec, i) => (
+                    <li key={i} className="flex items-start gap-3 text-sm text-slate-300">
+                      <span className="text-cyan-400 mt-0.5 shrink-0">{i + 1}.</span>
+                      <span>{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
 
             {/* Lead Capture + Ko-fi CTA */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
