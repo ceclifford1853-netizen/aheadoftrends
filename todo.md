@@ -91,3 +91,13 @@
 ## Phase 14: Logo Nav + Globe Fix
 - [x] Add full-width top nav bar with logo spanning across the top
 - [x] Restore globe animation (GlobeScene) in the hero background
+
+## Phase 15: Digital Oracle Cutover
+- [x] Upload AheadOfTrends Ai logo to CDN
+- [x] Build DigitalOracleScene (city-lights horizon, signal pulses every 2.5s)
+- [x] Update header: Zap icon + AheadOfTrends Ai logo top-left
+- [x] Wire new scene into Home.tsx, keep AEO tool focal center
+- [x] Generate sitemap.xml with all routes
+- [x] Run all tests — 7/7 passing
+- [x] AEO endpoint verified: stripe.com = 9.5/10 Dominant Presence
+- [ ] Save checkpoint and publish live
