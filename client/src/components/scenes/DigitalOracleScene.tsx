@@ -44,7 +44,7 @@ for (let i = 0; i < lightsCount; i++) {
 }
 lightsGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 lightsGeometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-const lightsMaterial = new THREE.PointsMaterial({ size: 0.04, vertexColors: true, blending: THREE.AdditiveBlending, transparent: true });
+const lightsMaterial = new THREE.PointsMaterial({ size: 0.07, vertexColors: true, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.95 });
 const cityLights = new THREE.Points(lightsGeometry, lightsMaterial);
 globeGroup.add(cityLights);
 const createAtmosphere = (radius: number, color: number, opacity: number) => {
@@ -52,8 +52,9 @@ const createAtmosphere = (radius: number, color: number, opacity: number) => {
   const material = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide, transparent: true, opacity, blending: THREE.AdditiveBlending });
   return new THREE.Mesh(geometry, material);
 };
-globeGroup.add(createAtmosphere(14.3, 0x00d9ff, 0.07));
-globeGroup.add(createAtmosphere(14.8, 0x00f0ff, 0.04));
+globeGroup.add(createAtmosphere(14.3, 0x00d9ff, 0.18));
+globeGroup.add(createAtmosphere(14.8, 0x00f0ff, 0.10));
+globeGroup.add(createAtmosphere(15.5, 0x0099cc, 0.05));
 const starsCount = 1800;
 const starsGeometry = new THREE.BufferGeometry();
 const starPositions = new Float32Array(starsCount * 3);
@@ -63,7 +64,7 @@ for (let i = 0; i < starsCount; i++) {
   starPositions[i * 3 + 2] = (Math.random() - 0.5) * 50 - 10;
 }
 starsGeometry.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
-const starsMaterial = new THREE.PointsMaterial({ size: 0.08, color: 0xffffff, transparent: true, blending: THREE.AdditiveBlending });
+const starsMaterial = new THREE.PointsMaterial({ size: 0.1, color: 0xffffff, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
 const starField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(starField);
 const hudGroup = new THREE.Group();

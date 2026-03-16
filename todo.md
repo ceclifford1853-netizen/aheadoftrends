@@ -101,3 +101,13 @@
 - [x] Run all tests — 7/7 passing
 - [x] AEO endpoint verified: stripe.com = 9.5/10 Dominant Presence
 - [ ] Save checkpoint and publish live
+
+## Phase 16: Bug Fixes + Aesthetic Polish
+- [ ] Fix 403 error — show human-readable message instead of raw JSON
+- [ ] Fix mobile nav overflow (Check AEO Rating button)
+- [ ] Enhance DigitalOracleScene to match reference (brighter city lights, stronger atmosphere glow)
+
+## Phase 17: Anti-Block Patch
+- [x] Apply Gemini's UA rotation + retry + ScraperAPI fallback to /api/aeo fetch block
+- [x] Test caymanmarlroad.com — returns clean BLOCKED:403 error (hard bot-block, ScraperAPI key needed)
+- [x] Re-run all 10 sites — 9/10 pass, 1 hard-blocked site returns clean error message

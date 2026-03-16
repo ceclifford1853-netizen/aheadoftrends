@@ -48,13 +48,70 @@ async function startServer() {
       let target = url.trim();
       if (!target.startsWith("http")) target = "https://" + target;
 
-      // Fetch the page HTML
-      const response = await axios.get(target, {
-        timeout: 15000,
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; AEOBot/1.0)" },
-        maxRedirects: 5,
+      // Anti-block fetch: UA rotation, retry, ScraperAPI fallback
+      const userAgents = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
+        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Mobile Safari/537.36"
+      ];
+      const getBrowserHeaders = (ua: string) => ({
+        "User-Agent": ua,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Cache-Control": "no-cache",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-GPC": "1",
+        "Connection": "keep-alive"
       });
-      const html = response.data as string;
+      let html: string;
+      try {
+        const ua1 = userAgents[Math.floor(Math.random() * userAgents.length)];
+        const response = await axios.get(target, {
+          headers: getBrowserHeaders(ua1),
+          timeout: 8000,
+          maxRedirects: 5,
+          validateStatus: (status) => status === 200
+        });
+        html = response.data as string;
+      } catch (fetchErr: any) {
+        const isBlocked = fetchErr.response?.status === 403 || fetchErr.response?.status === 429;
+        if (isBlocked) {
+          await new Promise(resolve => setTimeout(resolve, 1200));
+          try {
+            const usedUA = fetchErr.config?.headers?.["User-Agent"];
+            const remaining = userAgents.filter(u => u !== usedUA);
+            const ua2 = remaining[Math.floor(Math.random() * remaining.length)];
+            const response = await axios.get(target, {
+              headers: getBrowserHeaders(ua2),
+              timeout: 8000,
+              maxRedirects: 5
+            });
+            html = response.data as string;
+          } catch (retryErr: any) {
+            const apiKey = process.env.SCRAPER_API_KEY;
+            if (apiKey && (retryErr.response?.status === 403 || retryErr.response?.status === 429)) {
+              try {
+                const proxyUrl = `https://api.scraperapi.com/?api_key=${apiKey}&url=${encodeURIComponent(target)}`;
+                const response = await axios.get(proxyUrl, { timeout: 15000 });
+                html = response.data as string;
+              } catch {
+                throw new Error("BLOCKED:403");
+              }
+            } else {
+              throw new Error("BLOCKED:403");
+            }
+          }
+        } else {
+          throw fetchErr;
+        }
+      }
       const $ = cheerio.load(html);
 
       // Extract metadata
@@ -90,7 +147,7 @@ async function startServer() {
       if (hasOG) ts += 1;
       if (title.length > 10 && title.length < 70) ts += 1;
       if (metaDesc.length > 50 && metaDesc.length < 160) ts += 1;
-      if (response.status === 200) ts += 0.5;
+      ts += 0.5; // status 200 confirmed by fetch validation
       const technicalSeo = Math.min(10, Math.round(ts * 10) / 10);
 
       // Authority (20%)

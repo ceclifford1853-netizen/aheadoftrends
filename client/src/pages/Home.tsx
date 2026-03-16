@@ -54,7 +54,16 @@ export default function Home() {
       const data = await response.json();
       setResult(data);
     } catch (err: unknown) {
-      setError((err as Error).message || "Failed to analyze website. Verify URL and try again.");
+      const raw = (err as Error).message || "";
+      if (raw.includes("403")) {
+        setError("This website blocks automated analysis (403 Forbidden). Try a different URL, or add your ScraperAPI key to bypass bot protection.");
+      } else if (raw.includes("404")) {
+        setError("Website not found (404). Check the URL and try again.");
+      } else if (raw.includes("ENOTFOUND") || raw.includes("getaddrinfo")) {
+        setError("Domain not found. Check the URL spelling and try again.");
+      } else {
+        setError(raw || "Failed to analyze website. Verify the URL and try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -63,7 +72,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#000508] text-white">
       {/* 1. Fixed Top Nav Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-xl border-b border-cyan-400/10 h-16 flex items-center justify-between px-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-xl border-b border-cyan-400/10 h-16 flex items-center justify-between px-4 md:px-6">
         <div className="flex items-center gap-3">
           <div className="bg-cyan-400 rounded p-1.5 flex items-center justify-center">
             <Zap className="w-4 h-4 text-black" fill="black" />
@@ -77,12 +86,16 @@ export default function Home() {
           <a href="/pricing" className="text-sm text-slate-300 hover:text-cyan-400 transition-colors">Pricing</a>
           <a href="/about" className="text-sm text-slate-300 hover:text-cyan-400 transition-colors">About</a>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <a href="/alpha-rating" className="bg-cyan-400 text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-cyan-300 transition-all flex items-center gap-2 group">
             <Zap className="w-3.5 h-3.5" />
             Check AEO Rating
           </a>
         </div>
+        {/* Mobile CTA — compact */}
+        <a href="/alpha-rating" className="md:hidden bg-cyan-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+          <Zap className="w-3 h-3" />AEO
+        </a>
       </nav>
 
       {/* 2. Hero Section */}
