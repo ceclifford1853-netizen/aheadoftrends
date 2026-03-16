@@ -27,10 +27,20 @@ const DigitalOracleScene: React.FC = () => {
     globeGroup.position.y = -10;
     scene.add(globeGroup);
 
-    // === 1. SOLID DARK BASE (occludes stars behind globe) ===
-    const baseGeo = new THREE.SphereGeometry(13.85, 64, 64);
-    const baseMat = new THREE.MeshBasicMaterial({ color: 0x000810 });
-    globeGroup.add(new THREE.Mesh(baseGeo, baseMat));
+    // === 1. PHOTOREALISTIC EARTH — NASA night texture ===
+    const baseGeo = new THREE.SphereGeometry(14, 64, 64);
+    const baseMat = new THREE.MeshBasicMaterial({ color: 0x0a1628 });
+    const earthMesh = new THREE.Mesh(baseGeo, baseMat);
+    globeGroup.add(earthMesh);
+    // Load NASA night-earth texture
+    const texLoader = new THREE.TextureLoader();
+    texLoader.crossOrigin = 'anonymous';
+    texLoader.load(
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/The_earth_at_night.jpg/1280px-The_earth_at_night.jpg',
+      (tex) => { baseMat.map = tex; baseMat.color.set(0xffffff); baseMat.needsUpdate = true; },
+      undefined,
+      () => { /* fallback: keep dark base */ }
+    );
 
     // === 2. SUBTLE WIREFRAME GRID ===
     const wireGeo = new THREE.SphereGeometry(14, 48, 48);
@@ -184,6 +194,7 @@ const DigitalOracleScene: React.FC = () => {
       requestAnimationFrame(animate);
       wireframe.rotation.y += 0.0008;
       cityLights.rotation.y += 0.0008;
+      earthMesh.rotation.y += 0.0008;
 
       pulseGroup.children.forEach(p => {
         p.userData.time += 0.012;
