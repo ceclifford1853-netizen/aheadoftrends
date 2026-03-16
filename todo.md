@@ -87,3 +87,7 @@
 - [x] Verify all existing functionality still works
 - [x] Real DOM-based AEO scoring (cheerio) replacing mock random scores
 - [x] Vitest tests for scoring algorithm (7/7 passing)
+
+## Phase 14: Logo Nav + Globe Fix
+- [x] Add full-width top nav bar with logo spanning across the top
+- [x] Restore globe animation (GlobeScene) in the hero background

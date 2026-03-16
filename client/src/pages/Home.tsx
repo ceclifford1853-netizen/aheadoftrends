@@ -1,10 +1,15 @@
 import { useEffect, useState, useRef } from "react";
-import PlanetaryHorizon from "@/components/scenes/PlanetaryHorizon";
+import GlobeScene from "@/components/scenes/GlobeScene";
 import Footer from "@/components/Footer";
 import { injectWebApplicationSchema, injectOrganizationSchema } from "@/lib/schema";
 import { ArrowRight, Search, TrendingDown, TrendingUp, Zap, Eye, EyeOff, Bot, Globe, BarChart3, Shield } from "lucide-react";
 
 const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663404809022/CziTcEtnqUteT2h42DU7Lt/aot_logo-n2BqzLqNduSvAK5QEiV3Df.png";
+const NAV_LINKS = [
+  { label: "AEO Tool", href: "/alpha-rating" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "About", href: "/about" },
+];
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -53,24 +58,39 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-[#000a12] text-white overflow-x-hidden">
 
-      {/* ===== HERO SECTION with Three.js Planetary Horizon ===== */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      {/* ===== FULL-WIDTH TOP NAV BAR ===== */}
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${logoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+        <div className="bg-black/70 backdrop-blur-xl border-b border-cyan-400/10">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+            {/* Logo left-aligned, spanning the nav */}
+            <img
+              src={LOGO_URL}
+              alt="Ahead of Trends"
+              className="h-9 w-auto drop-shadow-[0_0_20px_rgba(0,217,255,0.5)]"
+            />
+            {/* Nav links */}
+            <div className="hidden md:flex items-center gap-8">
+              {NAV_LINKS.map(l => (
+                <a key={l.href} href={l.href} className="text-sm text-slate-300 hover:text-cyan-400 transition-colors font-medium">{l.label}</a>
+              ))}
+            </div>
+            {/* CTA */}
+            <a href="/alpha-rating" className="px-4 py-2 text-sm font-semibold bg-cyan-400 text-black rounded-lg hover:bg-cyan-300 transition-colors">
+              Free Audit
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* ===== HERO SECTION with Three.js Globe ===== */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16">
         {/* Three.js Background */}
         <div className="absolute inset-0 z-0">
-          <PlanetaryHorizon />
+          <GlobeScene />
         </div>
 
         {/* Content overlay */}
         <div className="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col items-center">
-
-          {/* ANIMATED LOGO */}
-          <div className={`transition-all duration-[2000ms] ease-out ${logoLoaded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-8 scale-90'}`}>
-            <img
-              src={LOGO_URL}
-              alt="Ahead of Trends"
-              className="h-16 md:h-20 w-auto mb-8 drop-shadow-[0_0_30px_rgba(0,217,255,0.4)]"
-            />
-          </div>
 
           {/* Badge */}
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 mb-6 transition-all duration-1000 delay-500 ${logoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
