@@ -1,297 +1,388 @@
-import { useState, Suspense, lazy } from 'react';
-import { Zap, Shield, BarChart3, Eye, Loader2, ArrowRight, CheckCircle, ExternalLink } from 'lucide-react';
-import { Link } from 'wouter';
+import { useEffect, useState, useRef } from "react";
+import PlanetaryHorizon from "@/components/scenes/PlanetaryHorizon";
+import Footer from "@/components/Footer";
+import { injectWebApplicationSchema, injectOrganizationSchema } from "@/lib/schema";
+import { ArrowRight, Search, TrendingDown, TrendingUp, Zap, Eye, EyeOff, Bot, Globe, BarChart3, Shield } from "lucide-react";
 
-const GlobeScene = lazy(() => import('@/components/GlobeScene'));
-
-const LOGO_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663404809022/CziTcEtnqUteT2h42DU7Lt/Screenshot_20260314_181909_Gallery_967bb47c.jpg';
-
-interface AeoScores {
-  contentQuality: number;
-  technicalSeo: number;
-  authority: number;
-  chatVisibility: number;
-  overall: number;
-}
-
-interface AeoResult {
-  scores: AeoScores;
-  recommendations: string[];
-  statusLabel: string;
-  analysis: { title: string; url: string };
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 70) return '#00ffff';
-  if (score >= 40) return '#ff9500';
-  return '#ff007f';
-}
-
-function getOverallColor(score: number): string {
-  if (score >= 7) return '#00ffff';
-  if (score >= 4) return '#ff9500';
-  return '#ff007f';
-}
+const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663404809022/CziTcEtnqUteT2h42DU7Lt/aot_logo-n2BqzLqNduSvAK5QEiV3Df.png";
 
 export default function Home() {
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<AeoResult | null>(null);
-  const [error, setError] = useState('');
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState("");
+  const [logoLoaded, setLogoLoaded] = useState(false);
 
-  const analyze = async () => {
+  useEffect(() => {
+    injectWebApplicationSchema({
+      title: "Ahead of Trends - AEO Optimization Platform",
+      description: "Advanced Answer Engine Optimization tool with 4-factor scoring algorithm.",
+      url: window.location.origin,
+    });
+    injectOrganizationSchema({
+      title: "Ahead of Trends",
+      description: "Leading AEO optimization platform.",
+      url: window.location.origin,
+    });
+    // Trigger logo animation after mount
+    const t = setTimeout(() => setLogoLoaded(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleAnalyze = async () => {
     if (!url.trim()) return;
     setLoading(true);
-    setError('');
+    setError("");
     setResult(null);
     try {
-      let target = url.trim();
-      if (!target.startsWith('http')) target = 'https://' + target;
-      const res = await fetch('/api/aeo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: target }),
+      const res = await fetch("/api/aeo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url.trim() }),
       });
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Analysis failed");
       setResult(data);
-    } catch (e: unknown) {
-      setError((e as Error).message || 'Analysis failed. Please try again.');
+    } catch (e: any) {
+      setError(e.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ background: '#050a0f', minHeight: '100vh', color: '#e0f7ff', fontFamily: "'Inter', sans-serif" }}>
-      {/* NAV */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(5,10,15,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(0,255,255,0.1)', padding: '0 2rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <img src={LOGO_URL} alt="Ahead of Trends AI" style={{ height: '38px', objectFit: 'contain' }} />
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-          {['Blog', 'Guides', 'About'].map(item => (
-            <Link key={item} href={`/${item.toLowerCase()}`} style={{ color: 'rgba(224,247,255,0.7)', textDecoration: 'none', fontSize: '0.875rem', letterSpacing: '0.05em' }}>{item}</Link>
-          ))}
-          <Link href="/alpha-rating" style={{ background: 'rgba(0,255,255,0.1)', border: '1px solid #00ffff', color: '#00ffff', padding: '0.4rem 1rem', borderRadius: '4px', textDecoration: 'none', fontSize: '0.875rem', letterSpacing: '0.05em' }}>Get AEO Rating</Link>
-        </div>
-      </nav>
+    <div className="min-h-screen flex flex-col bg-[#000a12] text-white overflow-x-hidden">
 
-      {/* HERO — 3D COCKPIT */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '80px', overflow: 'hidden' }}>
-        {/* Three.js Globe */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-          <Suspense fallback={null}>
-            <GlobeScene />
-          </Suspense>
+      {/* ===== HERO SECTION with Three.js Planetary Horizon ===== */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+        {/* Three.js Background */}
+        <div className="absolute inset-0 z-0">
+          <PlanetaryHorizon />
         </div>
 
-        {/* Cockpit HUD overlay */}
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(0,255,255,0.05) 0%, transparent 70%), radial-gradient(ellipse at center bottom, rgba(255,0,127,0.08) 0%, transparent 60%)', zIndex: 1, pointerEvents: 'none' }} />
+        {/* Content overlay */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 flex flex-col items-center">
 
-        {/* Content */}
-        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', maxWidth: '800px', padding: '0 1.5rem' }}>
-          {/* HUD badge */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(0,255,255,0.08)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '20px', padding: '0.3rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', letterSpacing: '0.15em', color: '#00ffff', textTransform: 'uppercase' }}>
-            <span style={{ width: '6px', height: '6px', background: '#00ffff', borderRadius: '50%', animation: 'pulse 2s infinite' }} />
-            AEO Diagnostic Engine — Online
+          {/* ANIMATED LOGO */}
+          <div className={`transition-all duration-[2000ms] ease-out ${logoLoaded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-8 scale-90'}`}>
+            <img
+              src={LOGO_URL}
+              alt="Ahead of Trends"
+              className="h-16 md:h-20 w-auto mb-8 drop-shadow-[0_0_30px_rgba(0,217,255,0.4)]"
+            />
           </div>
 
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
-            <span style={{ color: '#ffffff' }}>Free </span>
-            <span style={{ color: '#00ffff', textShadow: '0 0 30px rgba(0,255,255,0.5)' }}>AEO Score</span>
-            <span style={{ color: '#ffffff' }}> Checker</span>
+          {/* Badge */}
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 mb-6 transition-all duration-1000 delay-500 ${logoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-xs font-mono tracking-widest text-cyan-300 uppercase">
+              AEO Diagnostic Engine — Online
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h1 className={`text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4 leading-tight transition-all duration-1000 delay-700 ${logoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            Free <span className="text-cyan-400" style={{ textShadow: '0 0 20px rgba(0,217,255,0.5)' }}>AEO Score</span> Checker
           </h1>
 
-          <p style={{ fontSize: '1.1rem', color: 'rgba(224,247,255,0.7)', marginBottom: '0.5rem', lineHeight: 1.6 }}>
-            The internet's only <strong style={{ color: '#ff007f' }}>instant, one-click</strong> AI Engine Optimization diagnostic.
-          </p>
-          <p style={{ fontSize: '0.9rem', color: 'rgba(224,247,255,0.5)', marginBottom: '2.5rem' }}>
-            No signup. No payment. Enter your URL and get your score in seconds.
+          <p className={`text-slate-300 text-center text-lg md:text-xl max-w-2xl mb-8 transition-all duration-1000 delay-900 ${logoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            No signup. Instant results. Real DOM analysis — zero hallucinations.
           </p>
 
-          {/* SEARCH INPUT — PRIMARY FOCUS */}
-          <div style={{ background: 'rgba(0,255,255,0.05)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '12px', padding: '1.5rem', maxWidth: '600px', margin: '0 auto 1.5rem', boxShadow: '0 0 40px rgba(0,255,255,0.1)' }}>
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {/* === GLASSMORPHISM AEO SEARCH TOOL === */}
+          <div className={`w-full max-w-2xl bg-black/80 backdrop-blur-2xl border border-cyan-400/20 rounded-2xl p-6 md:p-8 transition-all duration-1000 delay-1000 ${logoLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+            <div className="flex gap-3">
               <input
                 type="text"
                 value={url}
-                onChange={e => setUrl(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && analyze()}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
                 placeholder="yourcompany.com"
-                style={{ flex: 1, minWidth: '200px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(0,255,255,0.2)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#e0f7ff', fontSize: '1rem', outline: 'none' }}
+                className="flex-1 bg-slate-900/80 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition-colors"
               />
               <button
-                onClick={analyze}
+                onClick={handleAnalyze}
                 disabled={loading}
-                style={{ background: loading ? 'rgba(0,255,255,0.2)' : 'linear-gradient(135deg, #00ffff, #0088cc)', border: 'none', borderRadius: '8px', padding: '0.75rem 1.5rem', color: '#050a0f', fontWeight: 700, fontSize: '0.95rem', cursor: loading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', letterSpacing: '0.05em', whiteSpace: 'nowrap' }}
+                className="px-6 py-3 bg-cyan-400 text-black font-semibold rounded-lg hover:bg-cyan-300 transition-colors disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
               >
-                {loading ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Zap size={16} />}
-                {loading ? 'Scanning...' : 'Analyze Now'}
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                ) : (
+                  <Search className="w-4 h-4" />
+                )}
+                {loading ? "Scanning..." : "Analyze"}
               </button>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '1rem', fontSize: '0.75rem', color: 'rgba(224,247,255,0.5)' }}>
-              {['100% Free', 'Instant Results', '4-Factor Score', 'No Signup'].map(tag => (
-                <span key={tag} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <CheckCircle size={12} style={{ color: '#00ffff' }} /> {tag}
-                </span>
-              ))}
+            <div className="flex gap-4 mt-3 text-xs text-slate-500">
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> 100% Free</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> Instant</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> 4-Factor</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400" /> No Signup</span>
             </div>
-          </div>
 
-          {/* ERROR */}
-          {error && (
-            <div style={{ background: 'rgba(255,0,127,0.1)', border: '1px solid rgba(255,0,127,0.3)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#ff007f', fontSize: '0.875rem', maxWidth: '600px', margin: '0 auto 1rem' }}>
-              {error}
-            </div>
-          )}
-
-          {/* RESULTS */}
-          {result && (
-            <div style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(0,255,255,0.2)', borderRadius: '12px', padding: '2rem', maxWidth: '700px', margin: '0 auto', textAlign: 'left', backdropFilter: 'blur(10px)' }}>
-              <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.5)', marginBottom: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Your AEO Score — {result.analysis.url}</p>
-                <div style={{ fontSize: '4rem', fontWeight: 900, color: getOverallColor(result.scores.overall), textShadow: `0 0 30px ${getOverallColor(result.scores.overall)}` }}>
-                  {result.scores.overall}<span style={{ fontSize: '1.5rem', color: 'rgba(224,247,255,0.5)' }}>/10</span>
-                </div>
-                <div style={{ display: 'inline-block', background: 'rgba(0,255,255,0.1)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '20px', padding: '0.3rem 1rem', fontSize: '0.8rem', color: '#00ffff', marginTop: '0.5rem' }}>
-                  {result.statusLabel}
-                </div>
+            {/* Error */}
+            {error && (
+              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                {error}
               </div>
+            )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-                {[
-                  { label: 'Content Quality', value: result.scores.contentQuality, icon: <BarChart3 size={14} /> },
-                  { label: 'Technical SEO', value: result.scores.technicalSeo, icon: <Shield size={14} /> },
-                  { label: 'Authority', value: result.scores.authority, icon: <Zap size={14} /> },
-                  { label: 'Chat Visibility', value: result.scores.chatVisibility, icon: <Eye size={14} /> },
-                ].map(({ label, value, icon }) => (
-                  <div key={label} style={{ background: 'rgba(0,255,255,0.03)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '8px', padding: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'rgba(224,247,255,0.7)' }}>{icon}{label}</span>
-                      <span style={{ fontSize: '1rem', fontWeight: 700, color: getScoreColor(value) }}>{value}</span>
+            {/* Results */}
+            {result && (
+              <div className="mt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-white">{result.analysis?.title || result.analysis?.url}</h3>
+                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                    result.scores.overall >= 7 ? 'bg-green-500/20 text-green-400' :
+                    result.scores.overall >= 5 ? 'bg-yellow-500/20 text-yellow-400' :
+                    'bg-red-500/20 text-red-400'
+                  }`}>
+                    {result.scores.overall}/10 — {result.statusLabel}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { label: "Content Quality", score: result.scores.contentQuality, weight: "40%", color: "cyan" },
+                    { label: "Technical SEO", score: result.scores.technicalSeo, weight: "25%", color: "pink" },
+                    { label: "Authority", score: result.scores.authority, weight: "20%", color: "cyan" },
+                    { label: "Chat Visibility", score: result.scores.chatVisibility, weight: "15%", color: "pink" },
+                  ].map((f) => (
+                    <div key={f.label} className="bg-slate-900/60 border border-slate-700 rounded-lg p-3 text-center">
+                      <div className={`text-2xl font-bold ${f.color === 'cyan' ? 'text-cyan-400' : 'text-pink-400'}`}>
+                        {f.score}/10
+                      </div>
+                      <div className="text-xs text-slate-400 mt-1">{f.label}</div>
+                      <div className="text-[10px] text-slate-600">{f.weight} weight</div>
                     </div>
-                    <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}>
-                      <div style={{ height: '100%', width: `${value}%`, background: getScoreColor(value), borderRadius: '2px', boxShadow: `0 0 8px ${getScoreColor(value)}` }} />
-                    </div>
+                  ))}
+                </div>
+                {result.recommendations && result.recommendations.length > 0 && (
+                  <div className="bg-slate-900/40 border border-slate-700 rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-cyan-400 mb-2">Recommendations</h4>
+                    <ul className="space-y-1">
+                      {result.recommendations.slice(0, 4).map((r: string, i: number) => (
+                        <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
+                          <ArrowRight className="w-3 h-3 mt-1 text-cyan-400 shrink-0" />
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                ))}
+                )}
               </div>
+            )}
+          </div>
+        </div>
 
-              {result.recommendations.length > 0 && (
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+          <div className="w-6 h-10 border-2 border-cyan-400/40 rounded-full flex items-start justify-center p-1">
+            <div className="w-1.5 h-3 bg-cyan-400/60 rounded-full" />
+          </div>
+        </div>
+      </section>
+
+      {/* ===== WHAT IS AEO SECTION ===== */}
+      <section className="relative py-24 px-4 bg-gradient-to-b from-[#000a12] via-[#001020] to-[#000a12]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="text-xs font-mono tracking-widest text-cyan-400 uppercase mb-4 block">The Paradigm Shift</span>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              What is <span className="text-cyan-400" style={{ textShadow: '0 0 15px rgba(0,217,255,0.4)' }}>Answer Engine Optimization</span>?
+            </h2>
+            <p className="text-slate-400 text-lg max-w-3xl mx-auto">
+              AEO is the discipline of optimizing your digital presence so that AI-powered answer engines — ChatGPT, Perplexity, Google AI Overviews, Claude — can find, understand, and recommend your business.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            <div className="bg-black/60 backdrop-blur-xl border border-cyan-400/15 rounded-xl p-6 hover:border-cyan-400/40 transition-all duration-300">
+              <Bot className="w-10 h-10 text-cyan-400 mb-4" />
+              <h3 className="text-xl font-bold mb-3 text-white">AI Pulls Answers, Not Links</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                When someone asks ChatGPT "What's the best CRM for startups?", the AI doesn't show 10 blue links. It gives one answer. If your business isn't structured for AI comprehension, you don't exist in that answer.
+              </p>
+            </div>
+            <div className="bg-black/60 backdrop-blur-xl border border-pink-500/15 rounded-xl p-6 hover:border-pink-500/40 transition-all duration-300">
+              <EyeOff className="w-10 h-10 text-pink-400 mb-4" />
+              <h3 className="text-xl font-bold mb-3 text-white">Invisible Without AEO</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Your website might rank #1 on Google and still be completely invisible to AI. LLMs don't crawl your site — they read structured data, schema markup, and authoritative content signals. No AEO means no AI visibility.
+              </p>
+            </div>
+            <div className="bg-black/60 backdrop-blur-xl border border-cyan-400/15 rounded-xl p-6 hover:border-cyan-400/40 transition-all duration-300">
+              <Eye className="w-10 h-10 text-cyan-400 mb-4" />
+              <h3 className="text-xl font-bold mb-3 text-white">The 4-Factor Framework</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Our proprietary algorithm scores your site across Content Quality (40%), Technical SEO (25%), Authority Signals (20%), and Chat Visibility (15%) — the exact factors that determine whether AI recommends you.
+              </p>
+            </div>
+          </div>
+
+          {/* Why your business is invisible */}
+          <div className="bg-black/40 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 md:p-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-xs font-mono tracking-widest text-red-400 uppercase">Critical Alert</span>
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
+              If ChatGPT Can't Find You, <span className="text-red-400">You're Losing Revenue Right Now</span>
+            </h3>
+            <p className="text-slate-300 text-lg mb-6 leading-relaxed">
+              Every day, millions of purchase decisions are being made through AI assistants. When a potential customer asks "Who provides the best [your service] in [your city]?", the AI either recommends you — or your competitor. There is no page 2. There is no "scroll down." You're either the answer, or you don't exist.
+            </p>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex items-start gap-3">
+                <Shield className="w-6 h-6 text-cyan-400 mt-1 shrink-0" />
                 <div>
-                  <h3 style={{ fontSize: '0.9rem', color: '#ff007f', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>What to Fix</h3>
-                  <ol style={{ paddingLeft: '1.2rem', margin: 0 }}>
-                    {result.recommendations.map((rec, i) => (
-                      <li key={i} style={{ fontSize: '0.85rem', color: 'rgba(224,247,255,0.75)', marginBottom: '0.4rem', lineHeight: 1.5 }}>{rec}</li>
-                    ))}
-                  </ol>
+                  <h4 className="font-semibold text-white mb-1">Schema Markup</h4>
+                  <p className="text-sm text-slate-400">JSON-LD structured data tells AI exactly what your business does, where you operate, and why you're authoritative.</p>
                 </div>
-              )}
-
-              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(0,255,255,0.1)', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <a href="https://ko-fi.com/aheadoftrends" target="_blank" rel="noreferrer" style={{ flex: 1, background: 'linear-gradient(135deg, #ff007f, #cc0066)', border: 'none', borderRadius: '8px', padding: '0.75rem', color: '#fff', fontWeight: 700, fontSize: '0.875rem', textAlign: 'center', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  <ExternalLink size={14} /> Get Expert Fix
-                </a>
+              </div>
+              <div className="flex items-start gap-3">
+                <BarChart3 className="w-6 h-6 text-pink-400 mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-white mb-1">Content Depth</h4>
+                  <p className="text-sm text-slate-400">AI favors comprehensive, well-structured content with clear headings, FAQs, and topical authority over thin pages.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Globe className="w-6 h-6 text-cyan-400 mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-white mb-1">Citation Network</h4>
+                  <p className="text-sm text-slate-400">Being referenced by other authoritative sources signals to AI that your business is a trusted entity in your industry.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Zap className="w-6 h-6 text-pink-400 mt-1 shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-white mb-1">Technical Performance</h4>
+                  <p className="text-sm text-slate-400">Fast load times, mobile optimization, and clean HTML structure make your content easily parseable by AI crawlers.</p>
+                </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </section>
 
-      {/* RESOURCES — AdSense grounding */}
-      <section style={{ background: '#070d12', padding: '5rem 2rem', borderTop: '1px solid rgba(0,255,255,0.1)' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#00ffff', marginBottom: '1rem', textAlign: 'center' }}>What is AEO (AI Engine Optimization)?</h2>
-          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
-            <strong style={{ color: '#e0f7ff' }}>AI Engine Optimization (AEO)</strong> is the discipline of structuring your website's content, metadata, and semantic markup so that AI-powered conversational engines — including ChatGPT, Google Gemini, Perplexity AI, Claude, and Microsoft Copilot — can accurately discover, understand, and recommend your business to users. Unlike traditional Search Engine Optimization (SEO), which targets ranked lists of links, AEO targets the answer layer: the single, direct response an AI assistant delivers when a user asks a question.
-          </p>
-          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
-            The shift from "search and browse" to "ask and receive" is accelerating. Over 40% of Gen Z users now prefer asking AI assistants over using Google Search for product and service discovery. Enterprise procurement teams increasingly rely on AI-generated vendor summaries. If your business is not optimized for the AI answer layer, you are invisible to a rapidly growing segment of your potential customers — often without realizing it.
-          </p>
+      {/* ===== GOOGLE IS DEAD vs LLM SEARCH ===== */}
+      <section className="relative py-24 px-4 bg-[#000a12]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="text-xs font-mono tracking-widest text-pink-400 uppercase mb-4 block">The Data Doesn't Lie</span>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Google Search is <span className="text-red-400 line-through opacity-60">Dying</span>. <span className="text-cyan-400" style={{ textShadow: '0 0 15px rgba(0,217,255,0.4)' }}>AI Search</span> is Here.
+            </h2>
+            <p className="text-slate-400 text-lg max-w-3xl mx-auto">
+              The shift from traditional search to AI-powered answer engines is the biggest disruption in digital marketing since the invention of Google itself.
+            </p>
+          </div>
 
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem', marginTop: '2rem' }}>The Four Pillars of AEO</h3>
+          {/* Comparison Grid */}
+          <div className="grid md:grid-cols-2 gap-8 mb-16">
+            {/* Google - Declining */}
+            <div className="bg-black/60 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl" />
+              <div className="flex items-center gap-3 mb-6">
+                <TrendingDown className="w-8 h-8 text-red-400" />
+                <h3 className="text-2xl font-bold text-red-400">Traditional Search</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Click-through rate</span>
+                  <span className="text-red-400 font-mono font-bold">-38% since 2023</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Zero-click searches</span>
+                  <span className="text-red-400 font-mono font-bold">65% of all queries</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">User behavior</span>
+                  <span className="text-red-400 font-mono font-bold">Scrolling 10 links</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Content format</span>
+                  <span className="text-slate-500 font-mono">Keyword-stuffed pages</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-slate-400">Discovery model</span>
+                  <span className="text-slate-500 font-mono">Rank & pray</span>
+                </div>
+              </div>
+            </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            {/* AI Search - Rising */}
+            <div className="bg-black/60 backdrop-blur-xl border border-cyan-400/20 rounded-2xl p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/5 rounded-full blur-3xl" />
+              <div className="flex items-center gap-3 mb-6">
+                <TrendingUp className="w-8 h-8 text-cyan-400" />
+                <h3 className="text-2xl font-bold text-cyan-400">AI Answer Engines</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">User adoption</span>
+                  <span className="text-cyan-400 font-mono font-bold">+340% YoY growth</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Answer accuracy</span>
+                  <span className="text-cyan-400 font-mono font-bold">Single trusted source</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">User behavior</span>
+                  <span className="text-cyan-400 font-mono font-bold">Ask & receive</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                  <span className="text-slate-400">Content format</span>
+                  <span className="text-cyan-400 font-mono font-bold">Structured authority</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-slate-400">Discovery model</span>
+                  <span className="text-cyan-400 font-mono font-bold">Be the answer</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Key Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: <BarChart3 size={20} />, title: 'Content Quality (40%)', desc: 'Word count, heading hierarchy (H1→H2→H3), image alt text coverage, and internal linking density. AI engines prefer comprehensive, well-structured content with clear topical authority.' },
-              { icon: <Shield size={20} />, title: 'Technical SEO (25%)', desc: 'Meta titles (30-60 chars), meta descriptions (120-160 chars), HTTPS, canonical tags, viewport configuration, and crawl accessibility. The technical foundation that allows AI crawlers to access and index your content.' },
-              { icon: <Zap size={20} />, title: 'Authority (20%)', desc: 'JSON-LD structured data (Organization, Article, Product, LocalBusiness), schema type richness, and outbound citations to authoritative sources. AI engines use entity recognition to determine if your business is a credible, citable source.' },
-              { icon: <Eye size={20} />, title: 'Chat Visibility (15%)', desc: 'FAQPage schema, HowTo markup, concise answer paragraphs (40-60 words), and question-based headings (What/How/Why). These are the exact content formats that AI engines extract for direct conversational answers.' },
-            ].map(({ icon, title, desc }) => (
-              <div key={title} style={{ background: 'rgba(0,255,255,0.03)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '8px', padding: '1.25rem' }}>
-                <div style={{ color: '#00ffff', marginBottom: '0.5rem' }}>{icon}</div>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#e0f7ff', marginBottom: '0.5rem' }}>{title}</h4>
-                <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.6)', lineHeight: 1.6 }}>{desc}</p>
+              { stat: "400M+", label: "Weekly ChatGPT users", color: "cyan" },
+              { stat: "65%", label: "Searches end without a click", color: "red" },
+              { stat: "87%", label: "Gen Z prefers AI for research", color: "cyan" },
+              { stat: "2026", label: "Year AI search overtakes traditional", color: "pink" },
+            ].map((s) => (
+              <div key={s.label} className="bg-black/40 backdrop-blur-xl border border-slate-800 rounded-xl p-6 text-center hover:border-cyan-400/30 transition-colors">
+                <div className={`text-3xl md:text-4xl font-bold mb-2 ${
+                  s.color === 'cyan' ? 'text-cyan-400' : s.color === 'pink' ? 'text-pink-400' : 'text-red-400'
+                }`} style={{ textShadow: `0 0 10px ${s.color === 'cyan' ? 'rgba(0,217,255,0.3)' : s.color === 'pink' ? 'rgba(236,72,153,0.3)' : 'rgba(239,68,68,0.3)'}` }}>
+                  {s.stat}
+                </div>
+                <div className="text-sm text-slate-400">{s.label}</div>
               </div>
             ))}
           </div>
-
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem' }}>What is a Good AEO Score?</h3>
-          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
-            Our diagnostic scores websites on a 0-10 scale. A score below 3 indicates that AI engines are likely ignoring your business entirely — your content is either inaccessible, too thin, or structurally incompatible with AI extraction. Scores between 3-5 represent Low Visibility: you have a basic web presence but significant structural gaps prevent consistent AI recommendation. Scores of 5-7 indicate Moderate Presence — your business is being considered by AI engines but not consistently recommended. Scores above 7 indicate Strong Visibility, and a score above 8.5 represents what we call Agentic Dominance: your business is the go-to recommendation when users ask AI assistants about your category.
-          </p>
-
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem' }}>How to Improve Your AEO Score</h3>
-          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '1.5rem' }}>
-            The most impactful single improvement for most websites is implementing JSON-LD structured data. Adding an Organization schema with your business name, description, URL, logo, and contact information gives AI engines a machine-readable identity card for your business. The second highest-impact change is adding FAQPage schema to your key service pages — this directly feeds the question-and-answer format that AI assistants use for conversational responses. Third, restructure your content to include concise answer paragraphs of 40-60 words that directly answer common questions about your business, product, or service. AI engines extract these self-contained blocks for direct answers.
-          </p>
-
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#ff007f', marginBottom: '0.75rem' }}>Why AEO Matters More Than SEO in 2025</h3>
-          <p style={{ color: 'rgba(224,247,255,0.7)', lineHeight: 1.8, marginBottom: '2rem' }}>
-            Traditional SEO optimizes for a list of ten blue links. A user clicks one, browses, and may or may not convert. AEO optimizes for a single, authoritative recommendation delivered directly in a conversational interface. When a user asks "What's the best project management tool for remote teams?" and an AI assistant recommends your product by name, that is a zero-click conversion event — the user already trusts the recommendation before visiting your site. The businesses that dominate AI recommendations in 2025 will own their category for the next decade. The window to establish that dominance is open now, and it closes as AI-optimized competitors enter every market.
-          </p>
-
-          {/* CTA repeat */}
-          <div style={{ textAlign: 'center', padding: '2rem', background: 'rgba(0,255,255,0.05)', border: '1px solid rgba(0,255,255,0.2)', borderRadius: '12px' }}>
-            <h3 style={{ color: '#00ffff', marginBottom: '0.5rem' }}>Check Your Score Now — It's Free</h3>
-            <p style={{ color: 'rgba(224,247,255,0.6)', fontSize: '0.875rem', marginBottom: '1rem' }}>No signup. No payment. Instant results.</p>
-            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ background: 'linear-gradient(135deg, #00ffff, #0088cc)', border: 'none', borderRadius: '8px', padding: '0.75rem 2rem', color: '#050a0f', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ArrowRight size={16} /> Analyze My Website
-            </button>
-          </div>
         </div>
       </section>
 
-      {/* SERVICES — reduced presence */}
-      <section style={{ background: '#050a0f', padding: '4rem 2rem', borderTop: '1px solid rgba(255,0,127,0.1)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'rgba(224,247,255,0.6)', marginBottom: '0.5rem' }}>Need Expert Help?</h2>
-          <p style={{ color: 'rgba(224,247,255,0.4)', fontSize: '0.875rem', marginBottom: '2rem' }}>Our team can implement your AEO improvements for you.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-            {[
-              { name: 'Agentic Growth', price: '$1,500/mo', features: ['Real-time AI trend monitoring', 'Monthly AEO content strategy', 'Schema markup implementation'] },
-              { name: 'Full-Stack AEO', price: '$3,500/mo', features: ['Everything in Agentic Growth', 'Full website AEO overhaul', 'Competitor displacement strategy'] },
-            ].map(tier => (
-              <div key={tier.name} style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '8px', padding: '1.5rem', textAlign: 'left' }}>
-                <h3 style={{ color: '#00ffff', marginBottom: '0.25rem', fontSize: '1rem' }}>{tier.name}</h3>
-                <p style={{ color: '#ff007f', fontWeight: 700, marginBottom: '1rem', fontSize: '1.25rem' }}>{tier.price}</p>
-                <ul style={{ paddingLeft: '1.2rem', margin: '0 0 1rem' }}>
-                  {tier.features.map(f => <li key={f} style={{ color: 'rgba(224,247,255,0.6)', fontSize: '0.8rem', marginBottom: '0.3rem' }}>{f}</li>)}
-                </ul>
-                <a href="https://ko-fi.com/aheadoftrends" target="_blank" rel="noreferrer" style={{ display: 'block', textAlign: 'center', background: 'rgba(0,255,255,0.1)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '6px', padding: '0.5rem', color: '#00ffff', textDecoration: 'none', fontSize: '0.875rem' }}>Get Started</a>
-              </div>
-            ))}
-          </div>
+      {/* ===== CTA SECTION ===== */}
+      <section className="relative py-20 px-4 bg-gradient-to-b from-[#000a12] to-[#001020]">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Don't Wait Until You're <span className="text-red-400">Invisible</span>
+          </h2>
+          <p className="text-slate-400 text-lg mb-8">
+            Check your AEO score now — it takes 10 seconds and costs nothing. Find out if AI can find your business before your competitors do.
+          </p>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="px-8 py-4 bg-cyan-400 text-black font-bold rounded-lg hover:bg-cyan-300 transition-colors text-lg"
+          >
+            Check Your AEO Score — Free
+          </button>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: '#030608', borderTop: '1px solid rgba(0,255,255,0.08)', padding: '2rem', textAlign: 'center' }}>
-        <img src={LOGO_URL} alt="Ahead of Trends AI" style={{ height: '32px', objectFit: 'contain', marginBottom: '1rem', opacity: 0.7 }} />
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
-          {['Blog', 'Guides', 'About', 'Privacy', 'Terms'].map(item => (
-            <Link key={item} href={`/${item.toLowerCase()}`} style={{ color: 'rgba(224,247,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>{item}</Link>
-          ))}
-        </div>
-        <p style={{ color: 'rgba(224,247,255,0.3)', fontSize: '0.75rem' }}>© 2025 Ahead of Trends AI. The internet's only free, instant AEO diagnostic.</p>
-      </footer>
-
-      <style>{`
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-        input::placeholder { color: rgba(224,247,255,0.3); }
-        input:focus { border-color: rgba(0,255,255,0.5) !important; box-shadow: 0 0 0 2px rgba(0,255,255,0.1); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-      `}</style>
+      <Footer />
     </div>
   );
 }
