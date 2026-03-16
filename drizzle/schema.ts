@@ -33,6 +33,8 @@ export const leads = mysqlTable("leads", {
   id: int("id").autoincrement().primaryKey(),
   email: varchar("email", { length: 320 }).notNull(),
   websiteUrl: varchar("websiteUrl", { length: 2048 }).notNull(),
+  score: varchar("score", { length: 16 }),
+  status: varchar("status", { length: 32 }).default("pending"),
   industry: varchar("industry", { length: 256 }),
   companyName: varchar("companyName", { length: 256 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

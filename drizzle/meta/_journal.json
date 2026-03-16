@@ -15,6 +15,13 @@
       "when": 1773205484089,
       "tag": "0001_cloudy_captain_america",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1773625065457,
+      "tag": "0002_moaning_norman_osborn",
+      "breakpoints": true
     }
   ]
 }

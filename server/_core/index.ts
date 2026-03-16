@@ -199,6 +199,39 @@ async function startServer() {
       return res.status(500).json({ error: msg });
     }
   });
+  // Lead capture endpoint
+  app.post("/api/leads", async (req, res) => {
+    try {
+      const { email, url: websiteUrl, score } = req.body;
+      if (!email || !websiteUrl) return res.status(400).json({ error: "email and url are required" });
+      const { getDb } = await import("../db");
+      const { leads } = await import("../../drizzle/schema");
+      const db = await getDb();
+      if (!db) return res.status(503).json({ error: "Database unavailable" });
+      await db.insert(leads).values({ email, websiteUrl, score: score?.toString() ?? null, status: "pending" });
+      res.status(200).json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: "Database insertion failed" });
+    }
+  });
+
+  // Admin stats endpoint
+  app.get("/api/admin/stats", async (req, res) => {
+    try {
+      const { getDb } = await import("../db");
+      const { leads } = await import("../../drizzle/schema");
+      const { count, avg, desc } = await import("drizzle-orm");
+      const db = await getDb();
+      if (!db) return res.status(503).json({ error: "Database unavailable" });
+      const totalLeads = await db.select({ count: count() }).from(leads);
+      const avgScore = await db.select({ avg: avg(leads.score) }).from(leads);
+      const recentLeads = await db.select().from(leads).limit(10).orderBy(desc(leads.createdAt));
+      res.status(200).json({ totalLeads: totalLeads[0].count, averageScore: avgScore[0].avg, recentLeads });
+    } catch (err: any) {
+      res.status(500).json({ error: "Stats retrieval failed" });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

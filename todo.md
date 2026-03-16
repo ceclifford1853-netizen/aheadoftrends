@@ -111,3 +111,11 @@
 - [x] Apply Gemini's UA rotation + retry + ScraperAPI fallback to /api/aeo fetch block
 - [x] Test caymanmarlroad.com — returns clean BLOCKED:403 error (hard bot-block, ScraperAPI key needed)
 - [x] Re-run all 10 sites — 9/10 pass, 1 hard-blocked site returns clean error message
+
+## Phase 18: Digital Oracle V1.1
+- [x] DigitalOracleScene V1.1 (signal pulse rings, optimized city lights, star field)
+- [x] Home.tsx: lead capture form, share button, AdSense placeholder, AEO explainer, Google-is-dead section
+- [x] leads DB table created (score + status columns)
+- [x] /api/leads POST endpoint — tested, inserts to DB
+- [x] /api/admin/stats GET endpoint — returns totalLeads, averageScore, recentLeads
+- [x] 7/7 tests passing, AEO 9.5/10, leads DB write confirmed
