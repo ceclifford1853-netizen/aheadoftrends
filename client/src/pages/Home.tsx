@@ -278,8 +278,14 @@ export default function Home() {
       <footer style={{ background: '#030608', borderTop: '1px solid rgba(0,255,255,0.08)', padding: '2rem', textAlign: 'center' }}>
         <img src={LOGO_URL} alt="Ahead of Trends AI" style={{ height: '32px', objectFit: 'contain', marginBottom: '1rem', opacity: 0.7 }} />
         <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
-          {['Blog', 'Guides', 'About', 'Privacy', 'Terms'].map(item => (
-            <Link key={item} href={`/${item.toLowerCase()}`} style={{ color: 'rgba(224,247,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>{item}</Link>
+          {[
+            { label: 'Blog', path: '/blog' },
+            { label: 'Guides', path: '/guides' },
+            { label: 'About', path: '/about-us' },
+            { label: 'Privacy', path: '/privacy-policy' },
+            { label: 'Terms', path: '/terms-of-service' },
+          ].map(item => (
+            <Link key={item.label} href={item.path} style={{ color: 'rgba(224,247,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>{item.label}</Link>
           ))}
         </div>
         <p style={{ color: 'rgba(224,247,255,0.3)', fontSize: '0.75rem' }}>© 2025 Ahead of Trends AI. The internet's only free, instant AEO diagnostic.</p>
