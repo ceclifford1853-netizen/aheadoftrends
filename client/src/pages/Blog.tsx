@@ -1,97 +1,58 @@
-import React from "react";
-import Footer from "@/components/Footer";
-import { Zap, ArrowLeft, Calendar, User } from "lucide-react";
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Link } from 'wouter';
+import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { blogPosts } from '../data/blogdata';
 
-const Blog = () => {
+export default function Blog() {
   return (
     <div className="min-h-screen bg-[#000508] text-white">
-      <nav className="fixed top-0 inset-x-0 z-50 bg-black/70 backdrop-blur-xl border-b border-cyan-400/10 h-16 flex items-center justify-between px-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-cyan-400 rounded p-1.5">
-            <Zap className="w-4 h-4 text-black" fill="black" />
-          </div>
-          <a href="/" className="font-bold text-lg">
-            AheadOfTrends<span className="text-cyan-400">Ai</span>
-          </a>
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#000508]/80 backdrop-blur-md border-b border-white/5">
+        <Link href="/">
+          <span className="font-bold text-lg tracking-tight cursor-pointer">Ahead of Trends</span>
+        </Link>
+        <div className="flex items-center gap-6 text-sm font-medium text-slate-400">
+          <Link href="/blog"><span className="text-white cursor-pointer">Blog</span></Link>
+          <Link href="/guides"><span className="hover:text-white transition-colors cursor-pointer">Guides</span></Link>
+          <Link href="/about-us"><span className="hover:text-white transition-colors cursor-pointer">About</span></Link>
+          <Link href="/alpha-rating">
+            <Button size="sm" className="bg-[#22d3ee] text-black font-bold hover:bg-[#22d3ee]/90">Get AEO Rating</Button>
+          </Link>
         </div>
       </nav>
-      <main className="max-w-4xl mx-auto pt-32 pb-24 px-6">
-        <a href="/" className="inline-flex items-center gap-2 text-cyan-400 mb-12 hover:underline">
-          <ArrowLeft className="w-4 h-4" /> Back to Tool
-        </a>
 
-        <article>
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-8 leading-tight">
-            Why Google Search Is Dying and What AEO Means for Your Business
-          </h1>
+      <div className="pt-24 pb-16 px-6 max-w-6xl mx-auto">
+        <Link href="/">
+          <button className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8 text-sm">
+            <ArrowLeft className="w-4 h-4" /> Back
+          </button>
+        </Link>
 
-          <div className="flex items-center gap-6 text-slate-500 mb-12 border-y border-white/5 py-6">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span>March 15, 2026</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              <span>Charles E. Clifford Jr.</span>
-            </div>
-            <div className="bg-cyan-950/30 text-cyan-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-              AEO Insights
-            </div>
-          </div>
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-black mb-4">AEO Intelligence Blog</h1>
+          <p className="text-slate-400 text-lg">Authoritative guides on Answer Engine Optimization, entity integrity, and Agentic Dominance.</p>
+        </div>
 
-          <div className="prose prose-invert prose-cyan max-w-none space-y-8 text-slate-300 leading-relaxed text-lg">
-            <p className="text-xl text-white font-medium">
-              The era of the "ten blue links" is coming to an abrupt end. For nearly three decades, Google was the undisputed gateway to the internet. Today, that gate is being bypassed by millions of users who no longer want a list of websites—they want a direct answer.
-            </p>
-
-            <h2 className="text-3xl font-bold text-white mt-12 mb-6">The Zero-Click Reality</h2>
-            <p>
-              Recent market data shows that over 90% of searches on mobile devices now result in "zero clicks." Users find the information they need directly in the AI-generated snippets provided by platforms like ChatGPT, Gemini, and Claude. If your business depends on organic traffic from traditional search engine result pages (SERPs), you are facing a technical extinction event.
-            </p>
-            <p>
-              When a user asks Gemini, "What is the most reliable AEO tool for business?", the AI doesn't give them a list of tools to visit. It synthesizes an answer. If your brand isn't part of that synthesized answer, you don't exist to that customer. This shift from Search Engine Optimization (SEO) to Answer Engine Optimization (AEO) is not just a trend—it is the new fundamental law of digital visibility.
-            </p>
-
-            <h2 className="text-3xl font-bold text-white mt-12 mb-6">What Is AEO?</h2>
-            <p>
-              Answer Engine Optimization is the technical discipline of configuring your digital properties to be easily ingested, understood, and cited as authoritative sources by Large Language Models (LLMs). Unlike SEO, which focuses on manipulating ranking algorithms through keywords and backlinks, AEO focuses on Entity Integrity.
-            </p>
-            <p>
-              AI models are not just looking for relevance; they are looking for verification. They need to know that your data is factually accurate and structured in a way that their neural networks can parse without ambiguity. This is why technical assets like Schema.org markup and clear heading hierarchies have moved from "nice-to-have" to "critical infrastructure."
-            </p>
-
-            <h2 className="text-3xl font-bold text-white mt-12 mb-6">The Four Pillars of AI Visibility</h2>
-            <p>
-              To survive this transition, businesses must optimize for the four primary factors that AI engines use to determine who to cite:
-            </p>
-            <ul className="space-y-4">
-              <li>
-                <strong>Content Quality &amp; Ingestion Depth:</strong> LLMs ignore marketing "fluff." Your content must provide direct, unambiguous answers to potential queries. If the AI can't find a clear answer in your text, it will look elsewhere.
-              </li>
-              <li>
-                <strong>Technical SEO Architecture:</strong> Clean code is no longer just about speed; it's about crawlability. A technically sound site allows AI bots to map your site structure efficiently, ensuring no high-value data is left behind.
-              </li>
-              <li>
-                <strong>Authority &amp; Knowledge Graph Presence:</strong> Your presence on high-authority technical domains and proper semantic tagging (Schema) build the "Trust Score" that LLMs require before they risk citing you to a user.
-              </li>
-              <li>
-                <strong>Citation Velocity:</strong> The frequency and speed at which your entity is referenced across the web act as a social proof signal for AI models, reinforcing your position as an industry standard.
-              </li>
-            </ul>
-
-            <h2 className="text-3xl font-bold text-white mt-12 mb-6">The Cost of Inaction</h2>
-            <p>
-              The cost of ignoring AEO is brand erasure. As agentic search becomes the default for B2B and high-intent B2C discovery, traditional SEO will continue to see diminishing returns. At AheadOfTrends Ai, we built the AEO Speedtest to give founders and marketing teams the data they need to fight back against this invisibility.
-            </p>
-            <p>
-              The future of search isn't about being found in a list; it's about being the answer the AI provides. Start optimizing for the answer engine era today, or risk becoming a footnote in the digital history of the 2020s.
-            </p>
-          </div>
-        </article>
-      </main>
-      <Footer />
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {blogPosts.map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`}>
+              <Card className="bg-white/5 border border-white/10 hover:border-[#22d3ee]/40 transition-all hover:bg-white/8 cursor-pointer h-full p-6 flex flex-col">
+                <div className="mb-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#22d3ee] bg-[#22d3ee]/10 px-2 py-1 rounded">
+                    {post.category}
+                  </span>
+                </div>
+                <h2 className="text-lg font-bold text-white mb-3 leading-tight flex-1">{post.title}</h2>
+                <p className="text-slate-400 text-sm mb-4 leading-relaxed">{post.excerpt}</p>
+                <div className="flex items-center gap-4 text-xs text-slate-500 mt-auto pt-4 border-t border-white/5">
+                  <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{post.date}</span>
+                  <span className="flex items-center gap-1"><User className="w-3 h-3" />{post.author}</span>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Blog;
+}

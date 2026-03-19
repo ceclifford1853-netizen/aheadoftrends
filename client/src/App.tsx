@@ -1,44 +1,64 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
+import SubscriptionRequired from "@/pages/SubscriptionRequired";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { Navbar } from "./components/Navbar";
+import { BetaGuard } from "./components/BetaGuard";
 import Home from "./pages/Home";
-import Pricing from "./pages/Pricing";
-import AlphaRating from './pages/AlphaRating';
-import DesignLab from './pages/DesignLab';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import Blog from './pages/Blog';
+import AlphaRating from "./pages/AlphaRating";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import AboutUs from "./pages/AboutUs";
+import Audits from "./pages/Audits";
+import Guides from "./pages/Guides";
+import GuidePage from "./pages/GuidePage";
+import Admin from "./pages/Admin";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
+      {/* Public routes — no beta guard */}
       <Route path={"/"} component={Home} />
-      <Route path={"/pricing"} component={Pricing} />
-      <Route path={"/alpha-rating"} component={AlphaRating} />
-      <Route path={"/design-lab"} component={DesignLab} />
-      <Route path={"/privacy"} component={Privacy} />
-      <Route path={"/terms"} component={Terms} />
       <Route path={"/blog"} component={Blog} />
+      <Route path={"/blog/:slug"} component={BlogPost} />
+      <Route path={"/privacy-policy"} component={PrivacyPolicy} />
+      <Route path={"/privacy"} component={PrivacyPolicy} />
+      <Route path={"/terms-of-service"} component={TermsOfService} />
+      <Route path={"/terms"} component={TermsOfService} />
+      <Route path={"/about-us"} component={AboutUs} />
+      <Route path={"/guides"} component={Guides} />
+      <Route path={"/guides/:slug"} component={GuidePage} />
+      <Route path={"/subscription-required"} component={SubscriptionRequired} />
       <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
+
+      {/* Protected routes — 14-day beta guard */}
+      <Route path={"/alpha-rating"}>
+        <BetaGuard><AlphaRating /></BetaGuard>
+      </Route>
+      <Route path={"/audits"}>
+        <BetaGuard><Audits /></BetaGuard>
+      </Route>
+      <Route path={"/admin"}>
+        <Admin />
+      </Route>
+
+      {/* Final fallback */}
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-// Cyber Noir theme: dark background with neon cyan/pink accents
-
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="dark"
-      >
+      <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
+          <Navbar />
           <Toaster />
           <Router />
         </TooltipProvider>

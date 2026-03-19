@@ -1,9 +1,0 @@
-{
-  "query": "CREATE TABLE IF NOT EXISTS `leads` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `email` varchar(320) NOT NULL,\n  `websiteUrl` varchar(2048) NOT NULL,\n  `score` varchar(16) DEFAULT NULL,\n  `status` varchar(32) DEFAULT 'pending',\n  `industry` varchar(256) DEFAULT NULL,\n  `companyName` varchar(256) DEFAULT NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`)\n);",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4SAPPGhJHm4otJ4.f94cc5ceab50 --database CziTcEtnqUteT2h42DU7Lt --execute CREATE TABLE IF NOT EXISTS `leads` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `email` varchar(320) NOT NULL,\n  `websiteUrl` varchar(2048) NOT NULL,\n  `score` varchar(16) DEFAULT NULL,\n  `status` varchar(32) DEFAULT 'pending',\n  `industry` varchar(256) DEFAULT NULL,\n  `companyName` varchar(256) DEFAULT NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`)\n);",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 204
-}
