@@ -65,88 +65,116 @@ export default function Home() {
   return (
     <div style={{ background: '#050a0f', minHeight: '100vh', color: '#e0f7ff', fontFamily: "'Inter', sans-serif" }}>
 
-    {/* ── HERO — 3D COCKPIT (globe section) ── */}
-    <section style={{
-      position: 'relative',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingTop: '40%',               // push content down below logo
-      overflow: 'hidden',
-    }}>
-
-      {/* ── BRAND LOGO — absolutely positioned at top, globe animation flows behind ── */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        zIndex: 2,
-        lineHeight: 0,
-        pointerEvents: 'none',
+      {/* ── HERO — 3D COCKPIT (globe section) ── */}
+      <section style={{
+        position: 'relative',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: '40%',
+        overflow: 'hidden',
       }}>
-        <img
-          src={BRAND_LOGO_URL}
-          alt="Ahead of Trends Ai"
-          style={{
-            width: '100%',
-            maxWidth: '100%',
-            height: 'auto',
-            display: 'block',
-            objectFit: 'contain',
-          }}
-        />
-      </div>
 
-      {/* Three.js Globe Background — dimmed by 12% via overlay */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Suspense fallback={null}>
-          <GlobeScene />
-        </Suspense>
-      </div>
-
-      {/* ── GLOBE DIMMER OVERLAY — adds ~12% opacity dark layer ── */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'rgba(5, 10, 15, 0.12)',   // 12% dark = slight dim. Increase to 0.20 for more.
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
-
-      {/* Cockpit HUD overlay */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'radial-gradient(ellipse at center top, rgba(0,255,255,0.05) 0%, transparent 70%), radial-gradient(ellipse at center bottom, rgba(255,0,127,0.08) 0%, transparent 60%)',
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
-
-      {/* Content */}
-      <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', maxWidth: '800px', padding: '0 1.5rem' }}>
-
-        {/* HUD badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(0,255,255,0.08)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '20px', padding: '0.3rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', letterSpacing: '0.15em', color: '#00ffff', textTransform: 'uppercase' }}>
-          <span style={{ width: '6px', height: '6px', background: '#00ffff', borderRadius: '50%', animation: 'pulse 2s infinite' }} />
-          AEO Diagnostic Engine — Online
+        {/* ── BRAND LOGO — absolutely positioned at top, globe animation flows behind ── */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          zIndex: 2,
+          lineHeight: 0,
+          pointerEvents: 'none',
+        }}>
+          <img
+            src={BRAND_LOGO_URL}
+            alt="Ahead of Trends Ai"
+            style={{
+              width: '100%',
+              maxWidth: '100%',
+              height: 'auto',
+              display: 'block',
+              objectFit: 'contain',
+            }}
+          />
         </div>
 
-        <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
-          Free <span style={{ color: '#00ffff' }}>AEO Score</span> Checker
-        </h1>
+        {/* Three.js Globe Background */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          <Suspense fallback={null}>
+            <GlobeScene />
+          </Suspense>
+        </div>
 
-        <p style={{ fontSize: '1.125rem', color: 'rgba(224,247,255,0.8)', marginBottom: '0.5rem', lineHeight: 1.6 }}>
-          The internet's only <span style={{ color: '#ff1080', fontWeight: 600 }}>instant, one-click</span> AI Engine Optimization diagnostic.
-        </p>
+        {/* Globe dimmer overlay — 12% dark */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'rgba(5, 10, 15, 0.12)',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }} />
 
-        <p style={{ fontSize: '0.875rem', color: 'rgba(224,247,255,0.6)', marginBottom: '2rem', lineHeight: 1.6 }}>
-          No signup. No payment. Enter your URL and get your score in seconds.
-        </p>
+        {/* Cockpit HUD overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'radial-gradient(ellipse at center top, rgba(0,255,255,0.05) 0%, transparent 70%), radial-gradient(ellipse at center bottom, rgba(255,0,127,0.08) 0%, transparent 60%)',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }} />
 
-          {/* SEARCH INPUT — PRIMARY FOCUS */}
+        {/* Content */}
+        <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', maxWidth: '800px', padding: '0 1.5rem' }}>
+
+          {/* HUD badge */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(0,255,255,0.08)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '20px', padding: '0.3rem 1rem', marginBottom: '1.25rem', fontSize: '0.75rem', letterSpacing: '0.15em', color: '#00ffff', textTransform: 'uppercase' }}>
+            <span style={{ width: '6px', height: '6px', background: '#00ffff', borderRadius: '50%', animation: 'pulse 2s infinite' }} />
+            AEO Diagnostic Engine — Online
+          </div>
+
+          {/* ── FEAR HOOK — the killer phrase ── */}
+          <div style={{
+            marginBottom: '1.5rem',
+            padding: '1rem 1.5rem',
+            background: 'rgba(255, 0, 127, 0.06)',
+            border: '1px solid rgba(255, 0, 127, 0.25)',
+            borderRadius: '12px',
+            maxWidth: '680px',
+            margin: '0 auto 1.5rem',
+          }}>
+            <p style={{
+              fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
+              fontWeight: 600,
+              lineHeight: 1.65,
+              color: 'rgba(224,247,255,0.92)',
+              letterSpacing: '0.01em',
+            }}>
+              If{' '}
+              <span style={{ color: '#00ffff', fontWeight: 700 }}>ChatGPT</span>,{' '}
+              <span style={{ color: '#00ffff', fontWeight: 700 }}>Perplexity</span>,{' '}
+              <span style={{ color: '#00ffff', fontWeight: 700 }}>Claude</span>{' '}
+              or{' '}
+              <span style={{ color: '#00ffff', fontWeight: 700 }}>Gemini</span>{' '}
+              doesn't recommend your website or business —{' '}
+              <span style={{ color: '#ff007f', fontWeight: 800 }}>you don\'t exist in the digital world.</span>
+            </p>
+          </div>
+
+          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
+            Free <span style={{ color: '#00ffff' }}>AEO Score</span> Checker
+          </h1>
+
+          <p style={{ fontSize: '1.125rem', color: 'rgba(224,247,255,0.8)', marginBottom: '0.5rem', lineHeight: 1.6 }}>
+            The internet's only <span style={{ color: '#ff1080', fontWeight: 600 }}>instant, one-click</span> AI Engine Optimization diagnostic.
+          </p>
+
+          <p style={{ fontSize: '0.875rem', color: 'rgba(224,247,255,0.6)', marginBottom: '2rem', lineHeight: 1.6 }}>
+            No signup. No payment. Enter your URL and get your score in seconds.
+          </p>
+
+          {/* SEARCH INPUT */}
           <div style={{ background: 'rgba(0,255,255,0.05)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '12px', padding: '1.5rem', maxWidth: '600px', margin: '0 auto 1.5rem', boxShadow: '0 0 40px rgba(0,255,255,0.1)' }}>
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <input
@@ -158,51 +186,50 @@ export default function Home() {
                 style={{ flex: 1, minWidth: '200px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(0,255,255,0.2)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#e0f7ff', fontSize: '1rem', outline: 'none' }}
               />
               <button
-  onClick={analyze}
-  disabled={loading}
-  style={{
-    position: 'relative',
-    padding: '0.85rem 2rem',
-    borderRadius: '0.6rem',
-    border: 'none',
-    cursor: loading ? 'not-allowed' : 'pointer',
-    opacity: loading ? 0.7 : 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.6rem',
-    fontWeight: 700,
-    fontSize: '1rem',
-    letterSpacing: '0.06em',
-    color: '#fff',
-    background: 'linear-gradient(135deg, #00F2FE 0%, #4FACFE 50%, #00F2FE 100%)',
-    backgroundSize: '200% 200%',
-    animation: 'gradientShift 3s ease infinite, glowBreathe 2.5s ease-in-out infinite',
-    boxShadow: '0 0 12px rgba(0,210,255,0.6), 0 0 30px rgba(0,210,255,0.3)',
-    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-    marginTop: '0.5rem',
-    marginBottom: '0.5rem',
-  }}
-  onMouseEnter={e => {
-    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.05)';
-    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px rgba(0,210,255,0.9), 0 0 50px rgba(0,210,255,0.5)';
-  }}
-  onMouseLeave={e => {
-    (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(0,210,255,0.6), 0 0 30px rgba(0,210,255,0.3)';
-  }}
->
-  {/* Shimmer sweep overlay */}
-  <span style={{
-    position: 'absolute',
-    inset: 0,
-    borderRadius: '0.6rem',
-    background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%)',
-    backgroundSize: '200% 100%',
-    animation: 'shimmerSweep 3.5s ease-in-out infinite',
-    pointerEvents: 'none',
-  }} />
-  <Zap size={17} color="#fff" strokeWidth={2.5} />
-  {loading ? 'Analyzing...' : 'Analyze Now'}
+                onClick={analyze}
+                disabled={loading}
+                style={{
+                  position: 'relative',
+                  padding: '0.85rem 2rem',
+                  borderRadius: '0.6rem',
+                  border: 'none',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.6rem',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  letterSpacing: '0.06em',
+                  color: '#fff',
+                  background: 'linear-gradient(135deg, #00F2FE 0%, #4FACFE 50%, #00F2FE 100%)',
+                  backgroundSize: '200% 200%',
+                  animation: 'gradientShift 3s ease infinite, glowBreathe 2.5s ease-in-out infinite',
+                  boxShadow: '0 0 12px rgba(0,210,255,0.6), 0 0 30px rgba(0,210,255,0.3)',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  marginTop: '0.5rem',
+                  marginBottom: '0.5rem',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.05)';
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px rgba(0,210,255,0.9), 0 0 50px rgba(0,210,255,0.5)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(0,210,255,0.6), 0 0 30px rgba(0,210,255,0.3)';
+                }}
+              >
+                <span style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '0.6rem',
+                  background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%)',
+                  backgroundSize: '200% 100%',
+                  animation: 'shimmerSweep 3.5s ease-in-out infinite',
+                  pointerEvents: 'none',
+                }} />
+                <Zap size={17} color="#fff" strokeWidth={2.5} />
+                {loading ? 'Analyzing...' : 'Analyze Now'}
               </button>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '1rem', fontSize: '0.75rem', color: 'rgba(224,247,255,0.5)' }}>
@@ -274,6 +301,66 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── INVISIBLE CALLOUT STRIP — sits between hero and resources ── */}
+      <section style={{
+        background: 'linear-gradient(135deg, rgba(255,0,127,0.08) 0%, rgba(0,255,255,0.06) 100%)',
+        borderTop: '1px solid rgba(255,0,127,0.2)',
+        borderBottom: '1px solid rgba(0,255,255,0.15)',
+        padding: '3rem 2rem',
+        textAlign: 'center',
+      }}>
+        <div style={{ maxWidth: '750px', margin: '0 auto' }}>
+          <p style={{
+            fontSize: 'clamp(1.1rem, 3vw, 1.5rem)',
+            fontWeight: 700,
+            lineHeight: 1.7,
+            color: 'rgba(224,247,255,0.95)',
+            marginBottom: '1.5rem',
+          }}>
+            Right now, millions of people are asking{' '}
+            <span style={{ color: '#00ffff' }}>AI</span> which businesses,
+            products and services to trust.
+          </p>
+          <p style={{
+            fontSize: 'clamp(1rem, 2.5vw, 1.25rem)',
+            fontWeight: 800,
+            color: '#ff007f',
+            marginBottom: '2rem',
+            letterSpacing: '0.01em',
+          }}>
+            Is your business one of the answers — or completely invisible?
+          </p>
+
+          {/* AI engine logos as text pills */}
+          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '2rem' }}>
+            {[
+              { name: 'ChatGPT', color: '#10a37f' },
+              { name: 'Perplexity', color: '#20c0c0' },
+              { name: 'Claude', color: '#d97706' },
+              { name: 'Gemini', color: '#4285f4' },
+              { name: 'Copilot', color: '#0078d4' },
+            ].map(({ name, color }) => (
+              <span key={name} style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${color}55`,
+                borderRadius: '20px',
+                padding: '0.4rem 1rem',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: color,
+                letterSpacing: '0.03em',
+              }}>
+                {name}
+              </span>
+            ))}
+          </div>
+
+          <p style={{ fontSize: '0.9rem', color: 'rgba(224,247,255,0.5)', lineHeight: 1.7, maxWidth: '600px', margin: '0 auto' }}>
+            These five AI engines now influence over <strong style={{ color: 'rgba(224,247,255,0.8)' }}>40% of all product and service discovery</strong> online. Traditional SEO doesn't get you recommended here. AEO does.
+          </p>
+        </div>
+      </section>
+
       {/* HOW IT WORKS SECTION */}
       <section style={{ background: '#070d12', padding: '4rem 2rem', borderTop: '1px solid rgba(0,255,255,0.08)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
@@ -299,6 +386,177 @@ export default function Home() {
                 <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.55)', lineHeight: 1.6 }}>{desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* USE CASES SECTION */}
+      <section style={{ background: '#050a0f', padding: '5rem 2rem', borderTop: '1px solid rgba(255,0,127,0.1)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,0,127,0.08)', border: '1px solid rgba(255,0,127,0.25)', borderRadius: '20px', padding: '0.3rem 1rem', marginBottom: '1rem', fontSize: '0.75rem', letterSpacing: '0.15em', color: '#ff007f', textTransform: 'uppercase' }}>
+              Real World Impact
+            </div>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 800, marginBottom: '0.75rem' }}>
+              Who Needs <span style={{ color: '#00ffff' }}>AEO</span> Right Now
+            </h2>
+            <p style={{ color: 'rgba(224,247,255,0.5)', fontSize: '0.9rem', maxWidth: '600px', margin: '0 auto' }}>
+              If your business falls into any of these categories, AI engines are likely recommending your competitors instead of you.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+            {[
+              {
+                label: 'SaaS & B2B Tech',
+                color: '#00ffff',
+                query: '"What\'s the best project management tool for remote teams?"',
+                problem: 'Buyers ask AI before they ever Google you. If you\'re not the cited answer, you don\'t exist in the consideration set.',
+                fix: 'Organization schema + buyer intent FAQ content = consistent AI recommendation.',
+              },
+              {
+                label: 'E-commerce',
+                color: '#4FACFE',
+                query: '"Best sustainable running shoe under $150?"',
+                problem: 'AI shopping assistants are replacing product search. Without AEO, your products are invisible to the fastest-growing discovery channel.',
+                fix: 'Product + Offer schema + answer-first descriptions = zero-click AI purchase recommendations.',
+              },
+              {
+                label: 'Local Business',
+                color: '#00ffff',
+                query: '"Best accountant in Miami?"',
+                problem: 'ChatGPT runs on Bing, not Google Maps. Your 5-star Google rating means nothing if your entity data isn\'t AEO-optimized.',
+                fix: 'LocalBusiness schema + Bing entity presence = AI dominance in local service queries.',
+              },
+              {
+                label: 'Luxury & Premium Brands',
+                color: '#ff007f',
+                query: '"What makes [Brand] worth the price?"',
+                problem: 'AI hallucinations about your brand — wrong pricing, wrong heritage, wrong facts — destroy trust before you can respond.',
+                fix: 'Brand entity authority + structured narrative content = AI cites your facts, not invented ones.',
+              },
+            ].map(({ label, color, query, problem, fix }) => (
+              <div key={label} style={{ background: 'rgba(0,0,0,0.3)', border: `1px solid ${color}22`, borderRadius: '12px', padding: '1.5rem' }}>
+                <div style={{ display: 'inline-block', background: `${color}15`, border: `1px solid ${color}40`, borderRadius: '20px', padding: '0.25rem 0.75rem', fontSize: '0.7rem', fontWeight: 700, color: color, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1rem' }}>{label}</div>
+                <p style={{ fontSize: '0.8rem', color: '#00ffff', fontStyle: 'italic', marginBottom: '0.75rem', lineHeight: 1.5 }}>"{query}"</p>
+                <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.55)', marginBottom: '0.75rem', lineHeight: 1.6 }}><strong style={{ color: '#ff007f' }}>The problem:</strong> {problem}</p>
+                <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.7)', lineHeight: 1.6 }}><strong style={{ color: '#00ffff' }}>The fix:</strong> {fix}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* COMPARISON SECTION — AEO vs SEO */}
+      <section style={{ background: '#070d12', padding: '5rem 2rem', borderTop: '1px solid rgba(0,255,255,0.08)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 800, marginBottom: '0.75rem' }}>
+              <span style={{ color: '#00ffff' }}>AEO</span> vs Traditional SEO
+            </h2>
+            <p style={{ color: 'rgba(224,247,255,0.5)', fontSize: '0.9rem' }}>Why the old playbook no longer wins the game.</p>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(0,255,255,0.2)' }}>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: 'rgba(224,247,255,0.5)', fontWeight: 600 }}>Factor</th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: '#ff007f', fontWeight: 600 }}>Traditional SEO</th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: '#00ffff', fontWeight: 600 }}>Ahead of Trends AEO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Primary Goal', 'Rank in Google blue links', 'Be cited by ChatGPT, Perplexity, Claude & Gemini'],
+                  ['Key Signal', 'Backlinks & keywords', 'Schema, entity clarity & answer-first content'],
+                  ['Result Format', 'Position in a ranked list', 'Direct recommendation in AI chat response'],
+                  ['Conversion Path', 'Click → Browse → Maybe convert', 'AI recommends → User already trusts → Convert'],
+                  ['2026 Trajectory', 'Declining — AI overviews cut clicks by 60%', 'Growing — AI discovery up 40% year over year'],
+                ].map(([factor, seo, aeo]) => (
+                  <tr key={factor} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.6)', fontWeight: 600 }}>{factor}</td>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.45)' }}>{seo}</td>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.85)' }}>{aeo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* COMPARISON SECTION — AEO vs SEO */}
+      <section style={{ background: '#070d12', padding: '5rem 2rem', borderTop: '1px solid rgba(0,255,255,0.08)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 800, marginBottom: '0.75rem' }}>
+              <span style={{ color: '#00ffff' }}>AEO</span> vs Traditional SEO
+            </h2>
+            <p style={{ color: 'rgba(224,247,255,0.5)', fontSize: '0.9rem' }}>Why the old playbook no longer wins the game.</p>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(0,255,255,0.2)' }}>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: 'rgba(224,247,255,0.5)', fontWeight: 600 }}>Factor</th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: '#ff007f', fontWeight: 600 }}>Traditional SEO</th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: '#00ffff', fontWeight: 600 }}>Ahead of Trends AEO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Primary Goal', 'Rank in Google blue links', 'Be cited by ChatGPT, Perplexity, Claude & Gemini'],
+                  ['Key Signal', 'Backlinks & keywords', 'Schema, entity clarity & answer-first content'],
+                  ['Result Format', 'Position in a ranked list', 'Direct recommendation in AI chat response'],
+                  ['Conversion Path', 'Click → Browse → Maybe convert', 'AI recommends → User already trusts → Convert'],
+                  ['2026 Trajectory', 'Declining — AI overviews cut clicks by 60%', 'Growing — AI discovery up 40% year over year'],
+                ].map(([factor, seo, aeo]) => (
+                  <tr key={factor} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.6)', fontWeight: 600 }}>{factor}</td>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.45)' }}>{seo}</td>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.85)' }}>{aeo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* COMPARISON SECTION — AEO vs SEO */}
+      <section style={{ background: '#070d12', padding: '5rem 2rem', borderTop: '1px solid rgba(0,255,255,0.08)' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 800, marginBottom: '0.75rem' }}>
+              <span style={{ color: '#00ffff' }}>AEO</span> vs Traditional SEO
+            </h2>
+            <p style={{ color: 'rgba(224,247,255,0.5)', fontSize: '0.9rem' }}>Why the old playbook no longer wins the game.</p>
+          </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(0,255,255,0.2)' }}>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: 'rgba(224,247,255,0.5)', fontWeight: 600 }}>Factor</th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: '#ff007f', fontWeight: 600 }}>Traditional SEO</th>
+                  <th style={{ padding: '0.75rem', textAlign: 'left', color: '#00ffff', fontWeight: 600 }}>Ahead of Trends AEO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Primary Goal', 'Rank in Google blue links', 'Be cited by ChatGPT, Perplexity, Claude & Gemini'],
+                  ['Key Signal', 'Backlinks & keywords', 'Schema, entity clarity & answer-first content'],
+                  ['Result Format', 'Position in a ranked list', 'Direct recommendation in AI chat response'],
+                  ['Conversion Path', 'Click => Browse => Maybe convert', 'AI recommends => User already trusts => Convert'],
+                  ['2026 Trajectory', 'Declining - AI overviews cut clicks 60%', 'Growing - AI discovery up 40% year over year'],
+                ].map(([factor, seo, aeo]) => (
+                  <tr key={factor} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.6)', fontWeight: 600 }}>{factor}</td>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.45)' }}>{seo}</td>
+                    <td style={{ padding: '0.75rem', color: 'rgba(224,247,255,0.85)' }}>{aeo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -357,7 +615,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SERVICES — reduced presence */}
+      {/* SERVICES */}
       <section style={{ background: '#050a0f', padding: '4rem 2rem', borderTop: '1px solid rgba(255,0,127,0.1)' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'rgba(224,247,255,0.6)', marginBottom: '0.5rem' }}>Need Expert Help?</h2>
@@ -400,6 +658,20 @@ export default function Home() {
       <style>{`
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes gradientShift {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        @keyframes glowBreathe {
+          0%, 100% { box-shadow: 0 0 12px rgba(0,210,255,0.6), 0 0 30px rgba(0,210,255,0.3); }
+          50%       { box-shadow: 0 0 22px rgba(0,210,255,0.9), 0 0 55px rgba(0,210,255,0.5); }
+        }
+        @keyframes shimmerSweep {
+          0%   { background-position: -200% 0; }
+          60%  { background-position: 200% 0; }
+          100% { background-position: 200% 0; }
+        }
         input::placeholder { color: rgba(224,247,255,0.3); }
         input:focus { border-color: rgba(0,255,255,0.5) !important; box-shadow: 0 0 0 2px rgba(0,255,255,0.1); }
         * { box-sizing: border-box; margin: 0; padding: 0; }
