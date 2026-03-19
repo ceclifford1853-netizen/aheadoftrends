@@ -1,7 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-export function AdSenseSlot({ slotId, format = 'auto', className = '' }: {  slotId: string;
-  format?: 'auto' | 'fluid' | 'rectangle';
+export function AdSenseSlot({
+  slotId,
+  format = "auto",
+  className = "",
+}: {
+  slotId: string;
+  format?: "auto" | "fluid" | "rectangle";
   className?: string;
 }) {
   useEffect(() => {
@@ -9,14 +14,15 @@ export function AdSenseSlot({ slotId, format = 'auto', className = '' }: {  slot
       // @ts-ignore - Adsbygoogle global
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (e) {
-      console.warn('AdSense load error:', e);
+      console.warn("AdSense load error:", e);
     }
   }, []);
 
   return (
     <div className={`w-full my-6 ${className}`}>
-      <ins className="adsbygoogle"
-        style={{ display: 'block' }}
+      <ins
+        className="adsbygoogle"
+        style={{ display: "block" }}
         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
         data-ad-slot={slotId}
         data-ad-format={format}

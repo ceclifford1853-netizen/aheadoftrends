@@ -1,5 +1,5 @@
-import { Link } from 'wouter';
-import { Button } from '@/components/ui/button';
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   return (
@@ -7,17 +7,25 @@ export function Navbar() {
       <div className="container flex items-center justify-between py-4 px-6">
         <div className="flex items-center gap-4">
           <Link href="/blog">
-            <span className="text-sm hover:text-cyan-400 transition-colors cursor-pointer text-gray-300">Blog</span>
+            <span className="text-sm hover:text-cyan-400 transition-colors cursor-pointer text-gray-300">
+              Blog
+            </span>
           </Link>
           <Link href="/guides">
-            <span className="text-sm hover:text-cyan-400 transition-colors cursor-pointer text-gray-300">Guides</span>
+            <span className="text-sm hover:text-cyan-400 transition-colors cursor-pointer text-gray-300">
+              Guides
+            </span>
           </Link>
           <Link href="/about-us">
-            <span className="text-sm hover:text-cyan-400 transition-colors cursor-pointer text-gray-300">About</span>
+            <span className="text-sm hover:text-cyan-400 transition-colors cursor-pointer text-gray-300">
+              About
+            </span>
           </Link>
         </div>
         <Link href="/alpha-rating">
-          <Button className="btn-neon text-xs md:text-sm">Get AEO Rating</Button>
+          <Button className="btn-neon text-xs md:text-sm">
+            Get AEO Rating
+          </Button>
         </Link>
       </div>
     </nav>

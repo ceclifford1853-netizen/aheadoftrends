@@ -18,6 +18,7 @@ import Audits from "./pages/Audits";
 import Guides from "./pages/Guides";
 import GuidePage from "./pages/GuidePage";
 import Admin from "./pages/Admin";
+import { Analytics } from "@vercel/analytics/react";
 
 function Router() {
   return (
@@ -38,10 +39,14 @@ function Router() {
 
       {/* Protected routes — 14-day beta guard */}
       <Route path={"/alpha-rating"}>
-        <BetaGuard><AlphaRating /></BetaGuard>
+        <BetaGuard>
+          <AlphaRating />
+        </BetaGuard>
       </Route>
       <Route path={"/audits"}>
-        <BetaGuard><Audits /></BetaGuard>
+        <BetaGuard>
+          <Audits />
+        </BetaGuard>
       </Route>
       <Route path={"/admin"}>
         <Admin />
@@ -61,6 +66,7 @@ function App() {
           <Navbar />
           <Toaster />
           <Router />
+          <Analytics />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

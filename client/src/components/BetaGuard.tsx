@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'wouter';
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 
-const BETA_START_KEY = 'aot_beta_start_date';
+const BETA_START_KEY = "aot_beta_start_date";
 const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
-const ADMIN_KEY = 'aot_admin_bypass';
+const ADMIN_KEY = "aot_admin_bypass";
 
 /**
  * BetaGuard — enforces 14-day beta access window.
@@ -16,7 +16,7 @@ export function BetaGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Admin bypass via localStorage
-    if (localStorage.getItem(ADMIN_KEY) === 'true') {
+    if (localStorage.getItem(ADMIN_KEY) === "true") {
       setReady(true);
       return;
     }
@@ -31,7 +31,7 @@ export function BetaGuard({ children }: { children: React.ReactNode }) {
 
     const elapsed = Date.now() - parseInt(stored, 10);
     if (elapsed > FOURTEEN_DAYS_MS) {
-      navigate('/subscription-required');
+      navigate("/subscription-required");
       return;
     }
 

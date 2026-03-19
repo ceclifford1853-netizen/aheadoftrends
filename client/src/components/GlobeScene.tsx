@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 export default function GlobeScene() {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -10,7 +10,12 @@ export default function GlobeScene() {
 
     // Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      mount.clientWidth / mount.clientHeight,
+      0.1,
+      1000
+    );
     camera.position.set(0, 2, 8);
     camera.lookAt(0, -6, 0);
 
@@ -44,7 +49,10 @@ export default function GlobeScene() {
     }
 
     const particleGeo = new THREE.BufferGeometry();
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particleGeo.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
     const particleMat = new THREE.PointsMaterial({
       color: 0xff007f,
       size: 0.08,
@@ -89,15 +97,21 @@ export default function GlobeScene() {
       camera.updateProjectionMatrix();
       renderer.setSize(mount.clientWidth, mount.clientHeight);
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       mount.removeChild(renderer.domElement);
       renderer.dispose();
     };
   }, []);
 
-  return <div ref={mountRef} className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }} />;
+  return (
+    <div
+      ref={mountRef}
+      className="absolute inset-0 w-full h-full"
+      style={{ zIndex: 0 }}
+    />
+  );
 }
