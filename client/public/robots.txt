@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Point the AI and Search Crawlers directly to the map
+Sitemap: https://www.aheadoftrends.io/sitemap.xml
