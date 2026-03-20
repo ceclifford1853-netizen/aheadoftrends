@@ -11,7 +11,7 @@ const guideMeta: Record<string, { title: string; category: string; date: string;
   '03-content-structure': { title: 'Content Structure for AI Readability', category: 'Content Strategy', date: '2026-03-08', premium: false, file: '03-content-structure.md' },
   '04-schema-markup': { title: 'Schema Markup for Agentic Dominance', category: 'Technical SEO', date: '2026-03-07', premium: false, file: '04-schema-markup.md' },
   '05-keyword-strategy': { title: 'Keyword Strategy for AI Chat Engines', category: 'Content Strategy', date: '2026-03-06', premium: true, file: '05-keyword-strategy.md' },
-  '06-ai-engine-optimization': { title: 'AI Engine Optimization: The Complete Guide', category: 'Agentic Strategy', date: '2026-03-05', premium: true, file: '06-ai-engine-optimization.md' },
+  '06-aeo-engine-optimization': { title: 'AI Engine Optimization: The Complete Guide', category: 'Agentic Strategy', date: '2026-03-05', premium: true, file: '06-ai-engine-optimization.md' },
   '07-citation-strategy': { title: 'Citation Strategy for Authority Building', category: 'Authority', date: '2026-03-04', premium: false, file: '07-citation-strategy.md' },
   '08-content-audit': { title: 'Content Audit for AEO Readiness', category: 'Content Strategy', date: '2026-03-03', premium: true, file: '08-content-audit.md' },
   '09-competitor-analysis': { title: 'Competitor Analysis in the AI Era', category: 'Competitive Intelligence', date: '2026-03-02', premium: false, file: '09-competitor-analysis.md' },
@@ -24,7 +24,8 @@ const guideMeta: Record<string, { title: string; category: string; date: string;
 };
 
 // Import all guide files using Vite's import.meta.glob
-const guideFiles = import.meta.glob('/client/src/content/technical-guides/*.md', { query: '?raw', import: 'default' });
+// Path is relative to this file's location (client/src/pages/)
+const guideFiles = import.meta.glob('../content/technical-guides/*.md', { query: '?raw', import: 'default' });
 
 export default function GuidePage() {
   const params = useParams<{ slug: string }>();
@@ -41,8 +42,8 @@ export default function GuidePage() {
       }
 
       try {
-        // Try to load the markdown file
-        const filePath = `/client/src/content/technical-guides/${meta.file}`;
+        // Path must match the glob pattern keys exactly
+        const filePath = `../content/technical-guides/${meta.file}`;
         const loader = guideFiles[filePath];
         if (loader) {
           const raw = await loader() as string;
