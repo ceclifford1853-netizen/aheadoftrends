@@ -1,5 +1,5 @@
 import { useState, Suspense, lazy } from 'react';
-import { Zap, Shield, BarChart3, Eye, Loader2, ArrowRight, CheckCircle, ExternalLink } from 'lucide-react';
+import { Zap, Shield, BarChart3, Eye, Loader2, ArrowRight, CheckCircle, Database, Search, Cpu, Globe, Lock, Share2, Activity, Layers, RefreshCw, FileText, Code, MessageSquare, Award } from 'lucide-react';
 import { Link } from 'wouter';
 
 const GlobeScene = lazy(() => import('@/components/GlobeScene'));
@@ -32,6 +32,23 @@ function getOverallColor(score: number): string {
   if (score >= 4) return '#ff9500';
   return '#ff007f';
 }
+
+const AEO_PILLARS = [
+  { icon: <FileText size={20} />, title: "Semantic Density", desc: "Optimization of term frequency-inverse document frequency (TF-IDF) for machine comprehension." },
+  { icon: <Layers size={20} />, title: "Heading Hierarchy", desc: "Strict H1-H6 logical nesting to establish document intent and topical flow." },
+  { icon: <Code size={20} />, title: "JSON-LD Entity Graph", desc: "Deep implementation of Organization, Service, and FAQ schema for direct extraction." },
+  { icon: <MessageSquare size={20} />, title: "Conversational Anchoring", desc: "Direct 40-60 word answer blocks optimized for LLM 'cite-and-quote' behavior." },
+  { icon: <Search size={20} />, title: "Technical Crawlability", desc: "Zero-latency access for AI agents via optimized robots.txt and sitemap architecture." },
+  { icon: <Lock size={20} />, title: "Protocol Integrity", desc: "HTTPS enforcement and canonicalization to prevent entity fragmentation across mirrors." },
+  { icon: <Database size={20} />, title: "Factual Density", desc: "Structuring unstructured data into machine-readable tables and lists for high-confidence retrieval." },
+  { icon: <Globe size={20} />, title: "Citation Velocity", desc: "Management of brand mentions across high-authority datasets used in LLM training." },
+  { icon: <Cpu size={20} />, title: "Agentic Readiness", desc: "Optimization for autonomous AI agents performing multi-step reasoning tasks." },
+  { icon: <Activity size={20} />, title: "Temporal Freshness", desc: "Real-time content updates to maintain relevance in RAG (Retrieval-Augmented Generation) cycles." },
+  { icon: <Award size={20} />, title: "E-E-A-T Verification", desc: "Hard-coding trust signals (Experience, Expertise, Authoritativeness, Trust) for AI filters." },
+  { icon: <Share2 size={20} />, title: "Internal Link Graph", desc: "Dense semantic linking to establish internal topical clusters and entity relationships." },
+  { icon: <RefreshCw size={20} />, title: "Query Intent Mapping", desc: "Aligning content structure with specific informational, navigational, and transactional intents." },
+  { icon: <Shield size={20} />, title: "Brand Safety Net", desc: "Protecting entity reputation against adversarial AI hallucinations and misattributions." }
+];
 
 export default function Home() {
   const [url, setUrl] = useState('');
@@ -247,7 +264,7 @@ export default function Home() {
                       <span style={{ fontSize: '1rem', fontWeight: 700, color: getScoreColor(value) }}>{value}</span>
                     </div>
                     <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px' }}>
-                      <div style={{ height: '100%', width: `${value}%`, background: getScoreColor(value), borderRadius: '2px', boxShadow: `0 0 8px ${getScoreColor(value)}` }} />
+                      <div style={{ height: '100%', width: `${value}%`, background: getScoreColor(value), borderRadius: '2px' }} />
                     </div>
                   </div>
                 ))}
@@ -263,8 +280,6 @@ export default function Home() {
                   </ol>
                 </div>
               )}
-
-
             </div>
           )}
         </div>
@@ -295,6 +310,37 @@ export default function Home() {
                 <p style={{ fontSize: '0.8rem', color: 'rgba(224,247,255,0.55)', lineHeight: 1.6 }}>{desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 14 PILLARS SECTION — REPLACED PRICING */}
+      <section style={{ background: '#050a0f', padding: '6rem 2rem', borderTop: '1px solid rgba(255,0,127,0.1)' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,0,127,0.08)', border: '1px solid rgba(255,0,127,0.3)', borderRadius: '20px', padding: '0.3rem 1rem', marginBottom: '1rem', fontSize: '0.75rem', letterSpacing: '0.15em', color: '#ff007f', textTransform: 'uppercase' }}>
+            Enterprise Capabilities
+          </div>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)', fontWeight: 800, color: '#e0f7ff', marginBottom: '1rem' }}>
+            Technical Specifications: The <span style={{ color: '#00ffff' }}>14 Pillars of AEO</span>
+          </h2>
+          <p style={{ color: 'rgba(224,247,255,0.5)', fontSize: '1rem', marginBottom: '4rem', maxWidth: '700px', margin: '0 auto 4rem' }}>
+            High-authority architectural standards required for consistent citation and recommendation across the generative AI ecosystem.
+          </p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', textAlign: 'left' }}>
+            {AEO_PILLARS.map((pillar, idx) => (
+              <div key={idx} style={{ background: 'rgba(0,255,255,0.02)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '12px', padding: '1.5rem', transition: 'all 0.3s ease' }}>
+                <div style={{ color: '#00ffff', marginBottom: '1rem' }}>{pillar.icon}</div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#e0f7ff', marginBottom: '0.5rem' }}>{pillar.title}</h3>
+                <p style={{ fontSize: '0.875rem', color: 'rgba(224,247,255,0.5)', lineHeight: 1.6 }}>{pillar.desc}</p>
+              </div>
+            ))}
+          </div>
+          
+          <div style={{ marginTop: '4rem', textAlign: 'center' }}>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ background: 'rgba(0,255,255,0.05)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '8px', padding: '1rem 2.5rem', color: '#00ffff', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s ease' }}>
+              Run Diagnostic to Check Pillar Alignment
+            </button>
           </div>
         </div>
       </section>
@@ -349,29 +395,6 @@ export default function Home() {
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ background: 'linear-gradient(135deg, #00ffff, #0088cc)', border: 'none', borderRadius: '8px', padding: '0.75rem 2rem', color: '#050a0f', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
               <ArrowRight size={16} /> Analyze My Website
             </button>
-          </div>
-        </div>
-      </section>
-
-      {/* SERVICES — reduced presence */}
-      <section style={{ background: '#050a0f', padding: '4rem 2rem', borderTop: '1px solid rgba(255,0,127,0.1)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'rgba(224,247,255,0.6)', marginBottom: '0.5rem' }}>Need Expert Help?</h2>
-          <p style={{ color: 'rgba(224,247,255,0.4)', fontSize: '0.875rem', marginBottom: '2rem' }}>Our team can implement your AEO improvements for you.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-            {[
-              { name: 'Agentic Growth', price: '$1,500/mo', features: ['Real-time AI trend monitoring', 'Monthly AEO content strategy', 'Schema markup implementation'] },
-              { name: 'Full-Stack AEO', price: '$3,500/mo', features: ['Everything in Agentic Growth', 'Full website AEO overhaul', 'Competitor displacement strategy'] },
-            ].map(tier => (
-              <div key={tier.name} style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(0,255,255,0.1)', borderRadius: '8px', padding: '1.5rem', textAlign: 'left' }}>
-                <h3 style={{ color: '#00ffff', marginBottom: '0.25rem', fontSize: '1rem' }}>{tier.name}</h3>
-                <p style={{ color: '#ff007f', fontWeight: 700, marginBottom: '1rem', fontSize: '1.25rem' }}>{tier.price}</p>
-                <ul style={{ paddingLeft: '1.2rem', margin: '0 0 1rem' }}>
-                  {tier.features.map(f => <li key={f} style={{ color: 'rgba(224,247,255,0.6)', fontSize: '0.8rem', marginBottom: '0.3rem' }}>{f}</li>)}
-                </ul>
-                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ width: '100%', display: 'block', textAlign: 'center', background: 'rgba(0,255,255,0.1)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '6px', padding: '0.5rem', color: '#00ffff', textDecoration: 'none', fontSize: '0.875rem', cursor: 'pointer' }}>Get Started</button>
-              </div>
-            ))}
           </div>
         </div>
       </section>
