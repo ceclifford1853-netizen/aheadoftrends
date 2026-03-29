@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Link, useParams } from 'wouter';
 import { ArrowLeft, Calendar, User, Share2 } from 'lucide-react';
 import { blogPosts } from '../data/blogdata';
-import KofiWidget from '@/components/KofiWidget';
 
 export default function BlogPost() {
   const params = useParams();
@@ -107,15 +106,6 @@ export default function BlogPost() {
           className="prose prose-lg prose-invert prose-cyan max-w-none"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
-
-        {/* Ko-fi Widget */}
-        <div className="mt-12 p-8 border-t border-slate-700 text-center bg-slate-900/50 rounded-2xl">
-          <h3 className="text-xl font-bold mb-4 text-white">Enjoyed this AEO Insight?</h3>
-          <p className="text-slate-400 mb-6">
-            Support our research into the future of AI search or book a custom audit.
-          </p>
-          <KofiWidget type="button" />
-        </div>
 
         {/* CTA */}
         <div className="mt-16 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/50 rounded-lg p-8 text-center">

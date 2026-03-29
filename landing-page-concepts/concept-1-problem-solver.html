@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahead of Trends - Are You Being Ignored by AI?</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cyan: #00ffff;
+      --pink: #ff007f;
+      --dark-bg: #050a0f;
+      --card-bg: #0a1015;
+      --text-light: #e0f7ff;
+      --text-muted: rgba(224, 247, 255, 0.6);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(5, 10, 15, 0.9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+      padding: 1rem 2rem;
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--cyan);
+      letter-spacing: -0.02em;
+    }
+
+    .logo span {
+      color: var(--pink);
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--cyan);
+    }
+
+    .btn-nav {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    /* HERO - PROBLEM FOCUSED */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(0, 255, 255, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 0, 127, 0.1);
+      border: 1px solid rgba(255, 0, 127, 0.3);
+      border-radius: 50px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--pink);
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--pink);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--cyan), #0088cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero h1 .problem {
+      color: var(--pink);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), #0088cc);
+      color: var(--dark-bg);
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-light);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--cyan);
+    }
+
+    /* PROBLEM SECTION */
+    .problem-section {
+      padding: 6rem 2rem;
+      background: var(--card-bg);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .problem-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 0, 127, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s;
+    }
+
+    .problem-card:hover {
+      border-color: var(--pink);
+      transform: translateY(-5px);
+    }
+
+    .problem-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 0, 127, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .problem-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--pink);
+    }
+
+    .problem-card p {
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* COMPARISON SECTION */
+    .comparison-section {
+      padding: 6rem 2rem;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    .comparison-card {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+      padding: 2.5rem;
+    }
+
+    .comparison-card.bad {
+      border: 1px solid rgba(255, 0, 127, 0.3);
+    }
+
+    .comparison-card.good {
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+    }
+
+    .comparison-card h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .comparison-card.bad h3 {
+      color: var(--pink);
+    }
+
+    .comparison-card.good h3 {
+      color: var(--cyan);
+    }
+
+    .comparison-list {
+      list-style: none;
+    }
+
+    .comparison-list li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .comparison-list li:last-child {
+      border-bottom: none;
+    }
+
+    .comparison-list .icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .comparison-card.bad .icon {
+      background: rgba(255, 0, 127, 0.2);
+      color: var(--pink);
+    }
+
+    .comparison-card.good .icon {
+      background: rgba(0, 255, 255, 0.2);
+      color: var(--cyan);
+    }
+
+    .vs-badge {
+      background: var(--pink);
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    /* TRUST INDICATORS */
+    .trust-section {
+      padding: 4rem 2rem;
+      background: var(--card-bg);
+      border-top: 1px solid rgba(0, 255, 255, 0.1);
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .trust-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .trust-item .number {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--cyan);
+      text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    }
+
+    .trust-item .label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.5rem;
+    }
+
+    /* FOOTER CTA */
+    .footer-cta {
+      padding: 6rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .footer-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(0, 255, 255, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .footer-cta h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .footer-cta p {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+    }
+
+    footer p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: color 0.3s;
+    }
+
+    footer a:hover {
+      color: var(--cyan);
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-content">
+      <div class="logo">Ahead<span>Trends</span></div>
+      <nav>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#why-it-matters">Why It Matters</a>
+        <a href="#results">Results</a>
+        <a href="#" class="btn-nav">Get Started</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="badge">
+        AI Is Changing How Customers Find You
+      </div>
+      <h1>
+        Is Your Business<br>
+        <span class="problem">Being Ignored</span> by<br>
+        <span class="highlight">ChatGPT & AI?</span>
+      </h1>
+      <p class="hero-subtitle">
+        While you've been optimizing for Google, a new gatekeeper has emerged.
+        People now ask AI for recommendations—and if you're not there,
+        <strong style="color: var(--text-light)">you don't exist.</strong>
+      </p>
+      <div class="cta-group">
+        <button class="btn-primary">Check If You're Visible →</button>
+        <button class="btn-secondary">See How It Works</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM SECTION -->
+  <section class="problem-section" id="why-it-matters">
+    <div class="container">
+      <div class="section-header">
+        <h2>The Hidden Problem <span style="color: var(--pink)">No One's Talking About</span></h2>
+        <p>Most business owners don't realize they've already been left behind</p>
+      </div>
+
+      <div class="problem-grid">
+        <div class="problem-card">
+          <div class="problem-icon">🔍</div>
+          <h3>You're Invisible to AI Searches</h3>
+          <p>When someone asks "What's the best [your service]?" AI recommends competitors—not you. You're losing customers without even knowing it.</p>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-icon">📉</div>
+          <h3>Your Website Traffic Is Dropping</h3>
+          <p>Traditional search is dying. Gen Z now prefers asking AI over Google. If your business isn't optimized for AI, you're slowly becoming irrelevant.</p>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-icon">💸</div>
+          <h3>You're Paying for Outdated Marketing</h3>
+          <p>SEO tactics from 2020 won't work in 2026. AI optimization is the new competitive advantage—and most businesses haven't started.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="comparison-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Two Businesses. <span style="color: var(--cyan)">Two Different Outcomes.</span></h2>
+        <p>Same industry. Same effort. Completely different results.</p>
+      </div>
+
+      <div class="comparison-grid">
+        <div class="comparison-card bad">
+          <h3>❌ Without AI Optimization</h3>
+          <ul class="comparison-list">
+            <li><span class="icon">✗</span> "I haven't heard of them" — what AI tells customers</li>
+            <li><span class="icon">✗</span> Invisible when AI makes recommendations</li>
+            <li><span class="icon">✗</span> Paying more for traditional ads that don't work</li>
+            <li><span class="icon">✗</span> Watching competitors get all the AI referrals</li>
+            <li><span class="icon">✗</span> Slowly losing market share</li>
+          </ul>
+        </div>
+
+        <div class="vs-badge">VS</div>
+
+        <div class="comparison-card good">
+          <h3>✓ With AI Optimization</h3>
+          <ul class="comparison-list">
+            <li><span class="icon">✓</span> "They're the best in the industry" — AI's answer</li>
+            <li><span class="icon">✓</span> First recommendation when customers ask AI</li>
+            <li><span class="icon">✓</span> Free exposure through AI conversations</li>
+            <li><span class="icon">✓</span> Dominating the zero-click economy</li>
+            <li><span class="icon">✓</span> Growing while competitors stagnate</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="trust-section">
+    <div class="container">
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="number">40%</div>
+          <div class="label">Gen Z Prefers AI Search</div>
+        </div>
+        <div class="trust-item">
+          <div class="number">0</div>
+          <div class="label">Clicks Needed to Win</div>
+        </div>
+        <div class="trust-item">
+          <div class="number">24/7</div>
+          <div class="label">AI Works While You Sleep</div>
+        </div>
+        <div class="trust-item">
+          <div class="number">Free</div>
+          <div class="label">To Check Your Score</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER CTA -->
+  <section class="footer-cta">
+    <div class="container">
+      <h2>Stop Being <span style="color: var(--cyan)">Invisible</span></h2>
+      <p>Get your free AI visibility score in 30 seconds. No signup required.</p>
+      <button class="btn-primary">Check Your AI Visibility →</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Blog</a>
+      <a href="#">Contact</a>
+    </p>
+    <p style="margin-top: 1rem; opacity: 0.5;">© 2026 Ahead of Trends AI. All rights reserved.</p>
+  </footer>
+</body>
+</html>
