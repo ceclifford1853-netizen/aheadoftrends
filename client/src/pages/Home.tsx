@@ -264,11 +264,7 @@ export default function Home() {
                 </div>
               )}
 
-              <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(0,255,255,0.1)', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <a href="https://ko-fi.com/aheadoftrends" target="_blank" rel="noreferrer" style={{ flex: 1, background: 'linear-gradient(135deg, #ff007f, #cc0066)', border: 'none', borderRadius: '8px', padding: '0.75rem', color: '#fff', fontWeight: 700, fontSize: '0.875rem', textAlign: 'center', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  <ExternalLink size={14} /> Get Expert Fix
-                </a>
-              </div>
+
             </div>
           )}
         </div>
@@ -373,7 +369,7 @@ export default function Home() {
                 <ul style={{ paddingLeft: '1.2rem', margin: '0 0 1rem' }}>
                   {tier.features.map(f => <li key={f} style={{ color: 'rgba(224,247,255,0.6)', fontSize: '0.8rem', marginBottom: '0.3rem' }}>{f}</li>)}
                 </ul>
-                <a href="https://ko-fi.com/aheadoftrends" target="_blank" rel="noreferrer" style={{ display: 'block', textAlign: 'center', background: 'rgba(0,255,255,0.1)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '6px', padding: '0.5rem', color: '#00ffff', textDecoration: 'none', fontSize: '0.875rem' }}>Get Started</a>
+                <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ width: '100%', display: 'block', textAlign: 'center', background: 'rgba(0,255,255,0.1)', border: '1px solid rgba(0,255,255,0.3)', borderRadius: '6px', padding: '0.5rem', color: '#00ffff', textDecoration: 'none', fontSize: '0.875rem', cursor: 'pointer' }}>Get Started</button>
               </div>
             ))}
           </div>

@@ -245,7 +245,7 @@ export default function AlphaRating() {
                 </form>
               </Card>
 
-              {/* Paid: Full Audit via Ko-fi */}
+              {/* Contact Us CTA */}
               <Card className="bg-gradient-to-br from-pink-500/10 to-purple-500/10 border-pink-500/50 p-8">
                 <h3 className="font-bold text-lg mb-2">Full AEO Audit</h3>
                 <p className="text-slate-400 text-sm mb-4">Get a comprehensive audit with personalized action plan from our Agentic team.</p>
@@ -255,11 +255,9 @@ export default function AlphaRating() {
                   <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-pink-400" /> 30-day action plan</li>
                   <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-pink-400" /> 1-on-1 strategy call</li>
                 </ul>
-                <a href="https://ko-fi.com/aheadoftrendsautomatedaiagents" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold">
-                    <ExternalLink className="w-4 h-4 mr-2" /> Request Full Audit
-                  </Button>
-                </a>
+                <Button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="w-full bg-pink-600 hover:bg-pink-700 text-white border-none">
+                  <Zap className="w-4 h-4 mr-2" /> Achieve Dominance
+                </Button>
               </Card>
             </div>
           </div>
