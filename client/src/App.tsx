@@ -13,6 +13,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import ContactUs from "./pages/ContactUs";
 import AboutUs from "./pages/AboutUs";
 import Audits from "./pages/Audits";
 import Guides from "./pages/Guides";
@@ -31,6 +32,7 @@ function Router() {
       <Route path={"/terms-of-service"} component={TermsOfService} />
       <Route path={"/terms"} component={TermsOfService} />
       <Route path={"/about-us"} component={AboutUs} />
+      <Route path={"/contact"} component={ContactUs} />
       <Route path={"/guides"} component={Guides} />
       <Route path={"/guides/:slug"} component={GuidePage} />
       <Route path={"/subscription-required"} component={SubscriptionRequired} />
