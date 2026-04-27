@@ -16,6 +16,14 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/Dotquest",
+      "destination": "/Dotquest/index.html"
+    },
+    {
+      "source": "/Dotquest/(.*)",
+      "destination": "/Dotquest/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
