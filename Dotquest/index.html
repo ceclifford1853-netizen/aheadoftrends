@@ -1,0 +1,850 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Keira & Carys · Dot Quest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        body {
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            touch-action: manipulation;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 780px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+        }
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+        }
+        .screen.active {
+            display: flex;
+        }
+        #start-screen h2 {
+            color: #fff;
+            font-size: 26px;
+            letter-spacing: 1px;
+        }
+        .upload-card {
+            background: #16213e;
+            border-radius: 22px;
+            padding: 14px 16px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 2px dashed #3a3a7a;
+        }
+        .upload-card .avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: #2a2a4a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .upload-card .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .upload-card .info h3 {
+            color: #fff;
+            font-size: 19px;
+        }
+        .upload-card .info p {
+            color: #999;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        .btn {
+            background: #7c5cfc;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 13px 28px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.15s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 18px rgba(124, 92, 252, 0.45);
+            flex-shrink: 0;
+        }
+        .btn:active {
+            transform: scale(0.94);
+            opacity: 0.85;
+        }
+        .btn-small {
+            padding: 9px 18px;
+            font-size: 13px;
+        }
+        #game-screen {
+            gap: 6px;
+        }
+        #header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 2px 6px;
+            gap: 8px;
+        }
+        .player-tag {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #16213e;
+            padding: 6px 11px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            flex: 1;
+            justify-content: center;
+        }
+        .player-tag .mini-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2a2a4a;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .player-tag .mini-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #game-canvas {
+            background: #0f0f1a;
+            border-radius: 18px;
+            box-shadow: 0 0 28px rgba(0, 0, 0, 0.55);
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            touch-action: none;
+        }
+        #status-message {
+            color: #ffd93d;
+            font-weight: bold;
+            font-size: 17px;
+            text-align: center;
+            min-height: 24px;
+        }
+        #dpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            width: 170px;
+            height: 170px;
+        }
+        .dpad-btn {
+            background: #2a2a4a;
+            border: none;
+            border-radius: 18px;
+            color: white;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.08s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.35);
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .dpad-btn:active {
+            background: #7c5cfc;
+            transform: scale(0.88);
+        }
+        .dpad-up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .dpad-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .dpad-center {
+            grid-column: 2;
+            grid-row: 2;
+            background: #16213e;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: none;
+            letter-spacing: 0.3px;
+        }
+        .dpad-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        .dpad-down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+        #back-btn {
+            margin-top: 2px;
+            background: transparent;
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 8px 20px;
+            font-size: 13px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- START SCREEN -->
+        <div id="start-screen" class="screen active">
+            <h2>✨ Dot Quest ✨</h2>
+            <div class="upload-card" id="keira-upload-card">
+                <div class="avatar" id="keira-avatar">👧</div>
+                <div class="info">
+                    <h3>Keira</h3>
+                    <p>Player 1</p>
+                </div>
+                <button class="btn btn-small" id="upload-keira-btn">📷</button>
+            </div>
+            <div class="upload-card" id="carys-upload-card">
+                <div class="avatar" id="carys-avatar">👶</div>
+                <div class="info">
+                    <h3>Carys</h3>
+                    <p>Player 2</p>
+                </div>
+                <button class="btn btn-small" id="upload-carys-btn">📷</button>
+            </div>
+            <button class="btn" id="play-btn">▶️ Play!</button>
+            <p style="color:#888; font-size:11px; text-align:center;" id="start-hint">Add their faces, then tap Play!</p>
+        </div>
+
+
+
+
+        <!-- GAME SCREEN -->
+        <div id="game-screen" class="screen">
+            <div id="header-bar">
+                <div class="player-tag" id="keira-tag">
+                    <div class="mini-avatar" id="keira-mini">👧</div>
+                    <span>Keira <span id="keira-score">0</span></span>
+                </div>
+                <div class="player-tag" id="carys-tag">
+                    <div class="mini-avatar" id="carys-mini">👶</div>
+                    <span>Carys <span id="carys-score">0</span></span>
+                </div>
+            </div>
+            <canvas id="game-canvas" width="400" height="400"></canvas>
+            <div id="status-message">Keira's turn! 👧</div>
+            <div id="dpad">
+                <button class="dpad-btn dpad-up">⬆️</button>
+                <button class="dpad-btn dpad-left">⬅️</button>
+                <button class="dpad-btn dpad-center" id="switch-turn-btn">🔄</button>
+                <button class="dpad-btn dpad-right">➡️</button>
+                <button class="dpad-btn dpad-down">⬇️</button>
+            </div>
+            <button class="btn btn-small" id="back-btn">← Menu</button>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        (function() {
+            // ═══════════════════════════════════════════
+            // ★★★ PASTE YOUR IMAGE URLS HERE ★★★
+            // ═══════════════════════════════════════════
+            const KEIRA_IMAGE_URL = “keira.png”;   // ← Paste Keira's raw GitHub URL between the quotes
+            const CARYS_IMAGE_URL = “Carys.png”;   // ← Paste Carys's raw GitHub URL between the quotes
+            // Example:
+            // const KEIRA_IMAGE_URL = 'https://raw.githubusercontent.ccm/jim/repo/main/keira.png';
+            // const CARYS_IMAGE_URL = 'https://raw.githubusercontent.com/jim/repo/main/carys.png';
+
+
+
+
+            // ── DOM refs ──
+            const startScreen = document.getElementById('start-screen');
+            const gameScreen = document.getElementById('game-screen');
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+
+
+
+
+            const keiraAvatar = document.getElementById('keira-avatar');
+            const carysAvatar = document.getElementById('carys-avatar');
+            const keiraMini = document.getElementById('keira-mini');
+            const carysMini = document.getElementById('carys-mini');
+            const keiraUploadCard = document.getElementById('keira-upload-card');
+            const carysUploadCard = document.getElementById('carys-upload-card');
+
+
+
+
+            const uploadKeiraBtn = document.getElementById('upload-keira-btn');
+            const uploadCarysBtn = document.getElementById('upload-carys-btn');
+            const playBtn = document.getElementById('play-btn');
+            const switchTurnBtn = document.getElementById('switch-turn-btn');
+            const backBtn = document.getElementById('back-btn');
+            const startHint = document.getElementById('start-hint');
+
+
+
+
+            const keiraScoreSpan = document.getElementById('keira-score');
+            const carysScoreSpan = document.getElementById('carys-score');
+            const statusMessage = document.getElementById('status-message');
+            const keiraTag = document.getElementById('keira-tag');
+            const carysTag = document.getElementById('carys-tag');
+
+
+
+
+            // ── Game state ──
+            const playerImages = {
+                keira: null,
+                carys: null
+            };
+            let currentPlayer = 'keira';
+            let keiraScore = 0;
+            let carysScore = 0;
+            let dots = [];
+            let ghosts = [];
+            let gameActive = false;
+            let moveCooldown = 0;
+            const MOVE_DELAY = 8;
+
+
+
+
+            const TILE_SIZE = 40;
+            const COLS = 10;
+            const ROWS = 10;
+
+
+
+
+            const keira = { x: 1, y: 1 };
+            const carys = { x: 8, y: 1 };
+
+
+
+
+            const maze = [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 0, 0, 1, 1, 0, 1],
+                [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1, 1, 1, 0, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ];
+
+
+
+
+            const keys = { up: false, down: false, left: false, right: false };
+
+
+
+
+            // ── Load image helper ──
+            function loadImage(url) {
+                return new Promise((resolve, reject) => {
+                    if (!url) return resolve(null);
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => resolve(img);
+                    img.onerror = () => reject(new Error('Failed to load image: ' + url));
+                    img.src = url;
+                });
+            }
+
+
+
+
+            function setPlayerImage(playerName, img) {
+                playerImages[playerName] = img;
+                const avatarEl = playerName === 'keira' ? keiraAvatar : carysAvatar;
+                const miniEl = playerName === 'keira' ? keiraMini : carysMini;
+                avatarEl.innerHTML = '';
+                miniEl.innerHTML = '';
+                if (img) {
+                    const aImg = document.createElement('img');
+                    aImg.src = img.src;
+                    avatarEl.appendChild(aImg);
+                    const mImg = document.createElement('img');
+                    mImg.src = img.src;
+                    miniEl.appendChild(mImg);
+                } else {
+                    avatarEl.textContent = playerName === 'keira' ? '👧' : '👶';
+                    miniEl.textContent = playerName === 'keira' ? '👧' : '👶';
+                }
+            }
+
+
+
+
+            // ── Pre‑load images from URLs ──
+            async function preloadImages() {
+                const keiraUrl = KEIRA_IMAGE_URL.trim();
+                const carysUrl = CARYS_IMAGE_URL.trim();
+                if (keiraUrl || carysUrl) {
+                    try {
+                        const [kImg, cImg] = await Promise.all([
+                            loadImage(keiraUrl),
+                            loadImage(carysUrl)
+                        ]);
+                        if (kImg) setPlayerImage('keira', kImg);
+                        if (cImg) setPlayerImage('carys', cImg);
+                        if (kImg) keiraUploadCard.classList.add('hidden');
+                        if (cImg) carysUploadCard.classList.add('hidden');
+                        if (kImg && cImg) {
+                            startHint.textContent = 'Faces loaded! Ready to play.';
+                        } else {
+                            startHint.textContent = 'Some faces loaded. You can upload the missing one.';
+                        }
+                    } catch (err) {
+                        console.warn('Pre‑load failed, upload buttons remain:', err.message);
+                        startHint.textContent = 'Could not load faces. Tap 📷 to add them.';
+                    }
+                }
+            }
+
+
+
+
+            // ── Manual upload (fallback) ──
+            function makeUploadHandler(playerName, avatarEl, miniEl) {
+                return () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const img = new Image();
+                            img.src = ev.target.result;
+                            img.onload = () => {
+                                setPlayerImage(playerName, img);
+                            };
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    input.click();
+                };
+            }
+            uploadKeiraBtn.addEventListener('click', makeUploadHandler('keira', keiraAvatar, keiraMini));
+            uploadCarysBtn.addEventListener('click', makeUploadHandler('carys', carysAvatar, carysMini));
+
+
+
+
+            // ── Game init ──
+            function generateDots() {
+                dots = [];
+                for (let row = 0; row < ROWS; row++) {
+                    for (let col = 0; col < COLS; col++) {
+                        if (maze[row][col] === 0) {
+                            if ((row === keira.y && col === keira.x) || (row === carys.y && col === carys.x))
+                            continue;
+                            dots.push({ x: col, y: row });
+                        }
+                    }
+                }
+            }
+
+
+
+
+            function generateGhosts() {
+                ghosts = [
+                    { x: 5, y: 5, dir: 'right', speed: 0.07, color: '#ff5e7a' },
+                    { x: 4, y: 4, dir: 'left', speed: 0.05, color: '#4ecdc4' }
+                ];
+            }
+
+
+
+
+            function resetGame() {
+                keira.x = 1;
+                keira.y = 1;
+                carys.x = 8;
+                carys.y = 1;
+                keiraScore = 0;
+                carysScore = 0;
+                currentPlayer = 'keira';
+                moveCooldown = 0;
+                keys.up = keys.down = keys.left = keys.right = false;
+                generateDots();
+                generateGhosts();
+                gameActive = true;
+                updateUI();
+                startScreen.classList.remove('active');
+                gameScreen.classList.add('active');
+            }
+
+
+
+
+            function goToMenu() {
+                gameActive = false;
+                gameScreen.classList.remove('active');
+                startScreen.classList.add('active');
+            }
+
+
+
+
+            function switchTurn() {
+                if (!gameActive || dots.length === 0) return;
+                currentPlayer = currentPlayer === 'keira' ? 'carys' : 'keira';
+                keys.up = keys.down = keys.left = keys.right = false;
+                moveCooldown = 0;
+                updateUI();
+            }
+
+
+
+
+            function updateUI() {
+                keiraScoreSpan.textContent = keiraScore;
+                carysScoreSpan.textContent = carysScore;
+                if (!gameActive && dots.length === 0) {
+                    statusMessage.textContent = '🎉 Maze cleared! Great job! 🎉';
+                } else {
+                    statusMessage.textContent = currentPlayer === 'keira' ? "Keira's turn! 👧" : "Carys's turn! 👶";
+                }
+                keiraTag.style.opacity = currentPlayer === 'keira' ? 1 : 0.45;
+                carysTag.style.opacity = currentPlayer === 'carys' ? 1 : 0.45;
+            }
+
+
+
+
+            function tryMovePlayer(player, dx, dy) {
+                const nx = player.x + dx;
+                const ny = player.y + dy;
+                if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && maze[ny][nx] === 0) {
+                    player.x = nx;
+                    player.y = ny;
+                    return true;
+                }
+                return false;
+            }
+
+
+
+
+            function handleInput() {
+                if (!gameActive || dots.length === 0) return;
+                if (moveCooldown > 0) {
+                    moveCooldown--;
+                    return;
+                }
+                const player = currentPlayer === 'keira' ? keira : carys;
+                let moved = false;
+                if (keys.up) moved = tryMovePlayer(player, 0, -1);
+                if (keys.down) moved = tryMovePlayer(player, 0, 1) || moved;
+                if (keys.left) moved = tryMovePlayer(player, -1, 0) || moved;
+                if (keys.right) moved = tryMovePlayer(player, 1, 0) || moved;
+                if (moved) {
+                    moveCooldown = MOVE_DELAY;
+                    checkDotCollision(player);
+                    checkGhostCollision();
+                    updateUI();
+                    if (dots.length === 0) {
+                        gameActive = false;
+                        updateUI();
+                    }
+                }
+            }
+
+
+
+
+            function moveGhosts() {
+                for (let ghost of ghosts) {
+                    let dx = 0,
+                        dy = 0;
+                    if (Math.random() < 0.025) {
+                        const dirs = ['up', 'down', 'left', 'right'];
+                        ghost.dir = dirs[Math.floor(Math.random() * 4)];
+                    }
+                    switch (ghost.dir) {
+                        case 'up':
+                            dy = -ghost.speed;
+                            break;
+                        case 'down':
+                            dy = ghost.speed;
+                            break;
+                        case 'left':
+                            dx = -ghost.speed;
+                            break;
+                        case 'right':
+                            dx = ghost.speed;
+                            break;
+                    }
+                    const nx = ghost.x + dx;
+                    const ny = ghost.y + dy;
+                    if (nx > 0.3 && nx < COLS - 0.7 && ny > 0.3 && ny < ROWS - 0.7 &&
+                        maze[Math.floor(ny)][Math.floor(nx)] === 0) {
+                        ghost.x = nx;
+                        ghost.y = ny;
+                    } else {
+                        const dirs = ['up', 'down', 'left', 'right'];
+                        ghost.dir = dirs[Math.floor(Math.random() * 4)];
+                    }
+                }
+            }
+
+
+
+
+            function checkDotCollision(player) {
+                for (let i = dots.length - 1; i >= 0; i--) {
+                    if (dots[i].x === player.x && dots[i].y === player.y) {
+                        dots.splice(i, 1);
+                        if (currentPlayer === 'keira') keiraScore++;
+                        else carysScore++;
+                    }
+                }
+            }
+
+
+
+
+            function checkGhostCollision() {
+                const player = currentPlayer === 'keira' ? keira : carys;
+                for (let ghost of ghosts) {
+                    const gx = Math.round(ghost.x);
+                    const gy = Math.round(ghost.y);
+                    if (player.x === gx && player.y === gy) {
+                        if (currentPlayer === 'keira') keiraScore = Math.max(0, keiraScore - 1);
+                        else carysScore = Math.max(0, carysScore - 1);
+                        updateUI();
+                        switchTurn();
+                        return;
+                    }
+                }
+            }
+
+
+
+
+            // ── Rendering ──
+            function drawMaze() {
+                for (let row = 0; row < ROWS; row++) {
+                    for (let col = 0; col < COLS; col++) {
+                        if (maze[row][col] === 1) {
+                            ctx.fillStyle = '#1e1e3a';
+                            ctx.fillRect(col * TILE_SIZE + 1, row * TILE_SIZE + 1, TILE_SIZE - 2, TILE_SIZE - 2);
+                        }
+                    }
+                }
+            }
+
+
+
+
+            function drawDots() {
+                ctx.fillStyle = '#ffd93d';
+                for (let dot of dots) {
+                    ctx.beginPath();
+                    ctx.arc(dot.x * TILE_SIZE + TILE_SIZE / 2, dot.y * TILE_SIZE + TILE_SIZE / 2, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+
+
+
+
+            function drawGhost(g) {
+                const gx = g.x * TILE_SIZE + TILE_SIZE / 2;
+                const gy = g.y * TILE_SIZE + TILE_SIZE / 2;
+                ctx.fillStyle = g.color;
+                ctx.beginPath();
+                ctx.arc(gx, gy, 15, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = '15px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('👻', gx, gy);
+            }
+
+
+
+
+            function drawPlayer(playerName, x, y, size, isActive) {
+                const px = x * TILE_SIZE + TILE_SIZE / 2;
+                const py = y * TILE_SIZE + TILE_SIZE / 2;
+                const img = playerImages[playerName];
+                ctx.save();
+                if (!isActive) ctx.globalAlpha = 0.35;
+                if (img) {
+                    ctx.beginPath();
+                    ctx.arc(px, py, size / 2, 0, 2 * Math.PI);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.drawImage(img, px - size / 2, py - size / 2, size, size);
+                } else {
+                    ctx.fillStyle = isActive ? '#7c5cfc' : '#555';
+                    ctx.beginPath();
+                    ctx.arc(px, py, size / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.font = `${size*0.6}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(playerName === 'keira' ? '👧' : '👶', px, py);
+                }
+                ctx.restore();
+                if (isActive) {
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(px, py, size / 2 + 3, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+            }
+
+
+
+
+            function drawAll() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawMaze();
+                drawDots();
+                ghosts.forEach(drawGhost);
+                const keiraActive = currentPlayer === 'keira';
+                drawPlayer('keira', keira.x, keira.y, 36, keiraActive);
+                drawPlayer('carys', carys.x, carys.y, 36, !keiraActive);
+            }
+
+
+
+
+            function loop() {
+                handleInput();
+                if (gameActive && dots.length > 0) moveGhosts();
+                if (gameActive) checkGhostCollision();
+                drawAll();
+                requestAnimationFrame(loop);
+            }
+
+
+
+
+            // ── D‑pad events ──
+            function bindDpad(selector, key) {
+                const btn = document.querySelector(selector);
+                const activate = (e) => { e.preventDefault();
+                    keys[key] = true; };
+                const deactivate = (e) => { e.preventDefault();
+                    keys[key] = false; };
+                btn.addEventListener('mousedown', activate);
+                btn.addEventListener('mouseup', deactivate);
+                btn.addEventListener('mouseleave', deactivate);
+                btn.addEventListener('touchstart', activate, { passive: false });
+                btn.addEventListener('touchend', deactivate);
+                btn.addEventListener('touchcancel', deactivate);
+            }
+            bindDpad('.dpad-up', 'up');
+            bindDpad('.dpad-down', 'down');
+            bindDpad('.dpad-left', 'left');
+            bindDpad('.dpad-right', 'right');
+
+
+
+
+            switchTurnBtn.addEventListener('click', (e) => { e.preventDefault();
+                switchTurn(); });
+            switchTurnBtn.addEventListener('touchend', (e) => { e.preventDefault();
+                switchTurn(); });
+
+
+
+
+            backBtn.addEventListener('click', goToMenu);
+            playBtn.addEventListener('click', resetGame);
+
+
+
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp') { e.preventDefault();
+                    keys.up = true; }
+                if (e.key === 'ArrowDown') { e.preventDefault();
+                    keys.down = true; }
+                if (e.key === 'ArrowLeft') { e.preventDefault();
+                    keys.left = true; }
+                if (e.key === 'ArrowRight') { e.preventDefault();
+                    keys.right = true; }
+                if (e.key === ' ') { e.preventDefault();
+                    switchTurn(); }
+            });
+            window.addEventListener('keyup', (e) => {
+                if (e.key === 'ArrowUp') { e.preventDefault();
+                    keys.up = false; }
+                if (e.key === 'ArrowDown') { e.preventDefault();
+                    keys.down = false; }
+                if (e.key === 'ArrowLeft') { e.preventDefault();
+                    keys.left = false; }
+                if (e.key === 'ArrowRight') { e.preventDefault();
+                    keys.right = false; }
+            });
+
+
+
+
+            updateUI();
+            preloadImages().then(() => {
+                console.log('🎮 Dot Quest ready!');
+            });
+            loop();
+        })();
+    </script>
+</body>
+</html>
